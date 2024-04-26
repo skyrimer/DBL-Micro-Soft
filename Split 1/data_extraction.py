@@ -83,7 +83,7 @@ def read_file(file_name: str) -> Dict[str, List[Any]]:
     return data_to_append
 
 
-def write_to_file(data: List[str], company_name: str) -> None:
+def write_to_file(data: List[Any], company_name: str) -> None:
     """
     Writes company tweets to the output file.
     :param data: tweets metadata written to the file.
