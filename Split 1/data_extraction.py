@@ -1,6 +1,7 @@
 import json
 import os
 from typing import List, Dict, Any
+from data_processing import start_cleaning
 
 data_directory: str = r'/data/'
 current_directory: str = os.getcwd()
@@ -65,6 +66,7 @@ def read_file(file_name: str) -> Dict[str, List[Any]]:
         'etihadairways': [],
         'virginatlantic': []
     }
+
     with open(current_directory+data_directory+file_name, 'r') as file:
         file_content: str = file.read()
         json_objects: List[str] = file_content.strip().split('\n')
@@ -72,8 +74,9 @@ def read_file(file_name: str) -> Dict[str, List[Any]]:
             try:
                 for company_name in company_ids.keys():
                     if company_related(tweet.lower(), company_name):
-                        item = json.loads(tweet)
-                        data_to_append[company_name].append(item)
+                        item: Dict[str, Any] = json.loads(tweet)  # Converts from string to dictionary.
+                        processed_item: Dict[str, Any] = start_cleaning(item)
+                        data_to_append[company_name].append(processed_item)
             except Exception as e:
                 print(e)
                 continue
@@ -105,13 +108,17 @@ def delete_existing_file(company_name: str) -> None:
         print(f"'{company_name}.json' was deleted.")
 
 
-def start():
+def start_extraction() -> None:
+    """
+    Initializer function for data_extraction.py
+    :return: nothing.
+    """
     # Resets the files to prevent duplicate data
     for company_name in company_ids.keys():
         delete_existing_file(company_name)
 
     # Distributes tweets to JSON files for different companies
-    files_in_root = list_files()
+    files_in_root: List[str] = list_files()
     for json_file in files_in_root:
         tweets: Dict[str, List[Any]] = read_file(json_file)
         for company_name in tweets.keys():
