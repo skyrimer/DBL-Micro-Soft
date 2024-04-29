@@ -1,113 +1,6 @@
 from typing import List, Dict, Any
 
-
-def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
-    """
-    Recursively iterates over a nested key and removes the deepest key and its value. Updates the passed dictionary.
-    :param item: the dictionary to remove the nested key from.
-    :param key: the nested key to remove.
-    :return: the dictionary with the specified key returned.
-    """
-    nested_keys: List[str] = key.split('.', 1)
-    parent_key: str = nested_keys[0]
-    child_key: str = nested_keys[1]
-
-    # Recursion if the key is nested with 2+ levels (2+ dots in it)
-    if '.' in child_key:
-        item[parent_key] = delete_nested_key(item[parent_key], child_key)
-    if parent_key in item.keys() and child_key in item[parent_key].keys():
-        del item[parent_key][child_key]  # Deletes the deepest key
-
-    return item
-
-
-def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Deletes a list of unnecessary (nested) keys from a dictionary.
-    :param item: the original dictionary to be cleaned.
-    :return: the cleaned dictionary.
-    """
-
-    # A list of irrelevant keys to remove. Keys with a dot (".") represent nested keys.
-    keys_to_remove: List[str] = [
-        'id',
-        'truncated',
-        'in_reply_to_status_id',
-        'in_reply_to_user_id',
-        'in_reply_to_screen_name',
-        'user.id',
-        'user.url',
-        'user.description',
-        'user.utc_offset',
-        'user.time_zone',
-        'user.geo_enabled',
-        'user.lang',
-        'user.contributors_enabled',
-        'user.is_translator',
-        'user.profile_background_color',
-        'user.profile_background_image_url',
-        'user.profile_background_image_url_https',
-        'user.profile_background_tile',
-        'user.profile_link_color',
-        'user.profile_sidebar_border_color',
-        'user.profile_sidebar_fill_color',
-        'user.profile_text_color',
-        'user.profile_use_background_image',
-        'user.profile_image_url',
-        'user.profile_image_url_https',
-        'user.profile_banner_url',
-        'user.follow_request_sent',
-        'user.notifications',
-        'user.translator_type',
-        'user.protected',
-        'user.listed_count',
-        'user.favourites_count',
-        'user.following',
-        'extended_tweet.display_text_range',
-        'extended_tweet.entities.hashtags',
-        'extended_tweet.entities.urls',
-        'extended_tweet.entities.symbols',
-        'entities.hashtags',
-        'entities.urls',
-        'entities.symbols',
-        'quoted_status_id',
-        'favorited',
-        'retweeted',
-        'filter_level',
-        'matching_rules',
-        'geo',
-        'contributors',
-        'timestamp_ms'
-    ]
-
-    for key in keys_to_remove:
-        # Remove non-nested keys instantly
-        if key in item.keys():
-            del item[key]
-        # Call a function to remove (multi-)nested keys.
-        elif '.' in key:
-            item = delete_nested_key(item, key)
-
-    return item
-
-
-def print_readable_dict(item: dict, indent: int = 0) -> None:
-    """
-    Recursively prints a dictionary in a readable format.
-    :param item: the dictionary to print.
-    :param indent: the indentation level (4 spaces = 1 tab).
-    :return: nothing.
-    """
-    for key, value in item.items():
-        if isinstance(value, dict):
-            print(" " * indent + f"\033[1m{key}:\033[0m")  # Keys will be bold
-            print_readable_dict(value, indent + 4)
-        else:
-            print(" " * indent + f"\033[1m{key}:\033[0m {value}")  # Keys will be bold
-
-
-def start():
-    test_dict = {
+test_dict = {
         'created_at': 'Wed May 22 12:20:55 +0000 2019',
         'id': 1131173091651072000,
         'id_str': '1131173091651072000',
@@ -207,10 +100,119 @@ def start():
         'lang': 'tr',
         'timestamp_ms': '1558527655886'
     }
-    # print_readable_dict(test_dict)
-    # print('\n\n')
-    processed_dict = delete_unnecessary_keys(test_dict)
-    print_readable_dict(processed_dict)
 
 
-start()
+def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
+    """
+    Recursively iterates over a nested key and removes the deepest key and its value. Updates the passed dictionary.
+    :param item: the dictionary to remove the nested key from.
+    :param key: the nested key to remove.
+    :return: the dictionary with the specified key returned.
+    """
+    nested_keys: List[str] = key.split('.', 1)
+    parent_key: str = nested_keys[0]
+    child_key: str = nested_keys[1]
+
+    # Recursion if the key is nested with 2+ levels (2+ dots in it)
+    if '.' in child_key and parent_key in item.keys():
+        item[parent_key] = delete_nested_key(item[parent_key], child_key)
+    if parent_key in item.keys() and child_key in item[parent_key].keys():
+        del item[parent_key][child_key]  # Deletes the deepest key
+
+    return item
+
+
+def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Deletes a list of unnecessary (nested) keys from a dictionary.
+    :param item: the original dictionary to be cleaned.
+    :return: the cleaned dictionary.
+    """
+
+    # A list of irrelevant keys to remove. Keys with a dot (".") represent nested keys.
+    keys_to_remove: List[str] = [
+        'id',
+        'truncated',
+        'in_reply_to_status_id',
+        'in_reply_to_user_id',
+        'in_reply_to_screen_name',
+        'user.id',
+        'user.url',
+        'user.description',
+        'user.utc_offset',
+        'user.time_zone',
+        'user.geo_enabled',
+        'user.lang',
+        'user.contributors_enabled',
+        'user.is_translator',
+        'user.profile_background_color',
+        'user.profile_background_image_url',
+        'user.profile_background_image_url_https',
+        'user.profile_background_tile',
+        'user.profile_link_color',
+        'user.profile_sidebar_border_color',
+        'user.profile_sidebar_fill_color',
+        'user.profile_text_color',
+        'user.profile_use_background_image',
+        'user.profile_image_url',
+        'user.profile_image_url_https',
+        'user.profile_banner_url',
+        'user.follow_request_sent',
+        'user.notifications',
+        'user.translator_type',
+        'user.protected',
+        'user.listed_count',
+        'user.favourites_count',
+        'user.following',
+        'extended_tweet.display_text_range',
+        'extended_tweet.entities.hashtags',
+        'extended_tweet.entities.urls',
+        'extended_tweet.entities.symbols',
+        'entities.hashtags',
+        'entities.urls',
+        'entities.symbols',
+        'quoted_status_id',
+        'favorited',
+        'retweeted',
+        'filter_level',
+        'matching_rules',
+        'geo',
+        'contributors',
+        'timestamp_ms'
+    ]
+
+    for key in keys_to_remove:
+        # Remove non-nested keys instantly
+        if key in item.keys():
+            del item[key]
+        # Call a function to remove (multi-)nested keys.
+        elif '.' in key:
+            item: Dict[str, Any] = delete_nested_key(item, key)
+
+    return item
+
+
+def print_readable_dict(item: dict, indent: int = 0) -> None:
+    """
+    Recursively prints a dictionary in a readable format.
+    :param item: the dictionary to print.
+    :param indent: the indentation level (4 spaces = 1 tab).
+    :return: nothing.
+    """
+    for key, value in item.items():
+        if isinstance(value, dict):
+            print(" " * indent + f"\033[1m{key}:\033[0m")  # Keys will be bold
+            print_readable_dict(value, indent + 4)
+        else:
+            print(" " * indent + f"\033[1m{key}:\033[0m {value}")  # Keys will be bold
+
+
+def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Initializer function for data_processing.py.
+    :param dictionary: the original dictionary to process.
+    :return: the processed dictionary.
+    """
+    processed_dict: Dict[str, Any] = delete_unnecessary_keys(dictionary)
+
+    return processed_dict
