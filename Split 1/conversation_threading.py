@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List, Dict, Any
 
 
@@ -10,7 +11,7 @@ def look_for_tweet(tweet: Dict[str, Any], list_of_tweets: List[Dict[str, Any]]):
     :return: True if a suitable (reply) tweet is found, False otherwise.
     """
     for item in list_of_tweets:
-        if item['id'] == tweet['in_reply_to_id']:
+        if item['id_str'] == tweet['in_reply_to_status_id_str']:
             item.setdefault('replies', []).append(tweet)  # setdefault sets the value if it doesn't exist yet
             return True
         elif 'replies' in item and look_for_tweet(tweet, item['replies']):
@@ -37,11 +38,14 @@ def process_tweets_from_file(file_path: str) -> List[Dict[str, Any]]:
     :return: the list of tweets from the file.
     """
     cleaned_tweets: List[Dict[str, Any]] = []
-
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         for line in file:
-            tweet: Dict[str, Any] = json.loads(line.strip())
-            cleaned_tweets = add_tweet_to_replies(tweet, cleaned_tweets)
+            try:
+                tweet: Dict[str, Any] = json.loads(line.strip())
+                cleaned_tweets = add_tweet_to_replies(tweet, cleaned_tweets)
+            except Exception as e:
+                print(e)
+                continue
 
     return cleaned_tweets
 
@@ -58,16 +62,26 @@ def write_tweets_to_file(cleaned_tweets, output_filename) -> None:
             file.write(json.dumps(tweet) + '\n')
 
 
-def start_creating_conversations() -> None:
+def delete_existing_file(file_path: str) -> None:
     """
-    Initializer function for conversation_threading.py
+    Deletes the file if it exists.
+    :param file_path: the path to the file.
     :return: nothing.
     """
-    in_file: str = 'tweets.json'
-    out_file: str = 'cleaned_tweets.json'
+    file_path: str = fr'{file_path}'
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"'{file_path.split('/')[-1]}' was deleted.")
 
-    cleaned_tweets = process_tweets_from_file(in_file)
-    write_tweets_to_file(cleaned_tweets, out_file)
 
+def start_creating_conversations(input_file_path: str) -> None:
+    """
+    Initializer function for conversation_threading.py
+    :param input_file_path: the full path to the JSON file to create threads from.
+    :return: nothing.
+    """
+    file_name: str = input_file_path.split("/")[-1]
+    out_file_path: str = f'conversations/cleaned_{file_name}'
 
-start_creating_conversations()
+    cleaned_tweets = process_tweets_from_file(input_file_path)
+    write_tweets_to_file(cleaned_tweets, out_file_path)

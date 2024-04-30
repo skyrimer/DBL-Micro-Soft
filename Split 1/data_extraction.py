@@ -2,6 +2,7 @@ import json
 import os
 from typing import List, Dict, Any
 from data_processing import start_cleaning
+from conversation_threading import start_creating_conversations
 
 data_directory: str = r'/data/'
 current_directory: str = os.getcwd()
@@ -92,8 +93,8 @@ def write_to_file(data: List[Any], company_name: str) -> None:
     """
     file_path: str = fr'{current_directory}/airlines/{company_name}.json'
     with open(file_path, 'a', encoding='utf-8') as file:
-        for string in data:
-            file.write(str(string) + '\n')
+        for item in data:
+            file.write(json.dumps(item) + '\n')
 
 
 def delete_existing_file(company_name: str) -> None:
@@ -123,3 +124,10 @@ def start_extraction() -> None:
         tweets: Dict[str, List[Any]] = read_file(json_file)
         for company_name in tweets.keys():
             write_to_file(tweets[company_name], company_name)
+
+    # Creates conversation threads for each company
+    path_to_company_data: str = os.getcwd() + '/airlines/'
+    files_list: List[str] = os.listdir(path_to_company_data)
+    files_list.remove('_lufthansa.json')  # Only for my local file, not necessary otherwise
+    for json_file in files_list:
+        start_creating_conversations(path_to_company_data+json_file)
