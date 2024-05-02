@@ -104,7 +104,7 @@ def delete_existing_file(file_path: str) -> None:
     """
     if os.path.exists(file_path):
         os.remove(file_path)
-        print(f"'{file_path.split('/')[-1]}.json' was deleted.")
+        print(f"'{file_path.split('/')[-1]}' was deleted.")
 
 
 def start_extraction() -> None:
