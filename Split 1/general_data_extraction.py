@@ -23,7 +23,7 @@ def read_from_file(file_name: str) -> List[Dict[str, Any]]:
 def append_to_file(tweet: Dict[str, Any]) -> None:
     output_file_path: str = os.getcwd() + '/data/' + 'cleaned_tweets_combined.json'
     with open(output_file_path, 'a', encoding='utf-8') as file:
-        file.write(json.dumps(tweet) + '\n')
+        file.write(json.dumps(tweet) + ',\n')
 
 
 def start_general_extraction(sample_data_only: bool = True) -> None:
@@ -44,6 +44,7 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
         path_to_all_json_files: str = os.getcwd() + '/all_data/'
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
     for file in all_raw_json_files:
+        print(f'Processing {file}')
         tweets_from_file: List[Dict[str, Any]] = read_from_file(path_to_all_json_files + file)
         for tweet in tweets_from_file:
             cleaned_tweet: Dict[str, Any] = start_cleaning(tweet)
