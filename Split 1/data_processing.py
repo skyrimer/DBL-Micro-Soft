@@ -171,6 +171,7 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         'user.following',
         'extended_tweet.display_text_range',
         'extended_tweet.entities',
+        'extended_tweet.extended_entities',
         'entities',
         'quoted_status_id',
         'quoted_status',
