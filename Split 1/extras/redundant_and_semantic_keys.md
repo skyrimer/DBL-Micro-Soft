@@ -1,4 +1,4 @@
-## Redundant Keys (data_processing.py):
+## Redundant Keys (data_processing.py)(some are missing, will be updated later, refer to kept keys for now):
 ### Should use str format of the following keys: 
 - **'id'**
 - **'in_reply_to_status_id'**
@@ -52,17 +52,13 @@
 - **'timestamp_ms'**
 
 ## Sentiment Analysis Keys
-### All kept keys within the objects:
-- **'created_at'**
+### All kept keys within the objects (database fields):
 - **'id_str'**
 - **'text'**
 - **'source'**
 - **'in_reply_to_status_id_str'**
-- **'in_reply_to_user_id_str'**
 - **'user'**
   - **'id_str'**
-  - **'name'**
-  - **'screen_name'**
   - **'location'**
   - **'verified'**
   - **'followers_count'**
@@ -71,38 +67,17 @@
   - **'created_at'**
   - **'default_profile'**
   - **'default_profile_image'**
-- **'coordinates'**
-  - **'type'** (Point/Polygon)
-  - **'coordinates'** (x, y for Point, 4 arrays of [x, y] for Polygon)
 - **'place'**
-  - **'id'**
-  - **'url'**
-  - **'place_type'**
-  - **'name'**
-  - **'full_name'**
   - **'country_code'**
-  - **'country'**
-  - **'bounding_box'**
-    - **'type'** (Point?/Polygon)
-    - **'coordinates'** (4 arrays of [x, y])
-- **'retweeted_status'**
-- **'is_quote_status'**
 - **'quote_count'**
 - **'reply_count'**
 - **'retweet_count'**
 - **'favorite_count'**
-- **'entities'**
 - **'lang'**
-- **'possibly_sensitive'**
-- **'display_text_range'**
 - **'extended_tweet'**
   - **'full_text'**
-  - **'entities'**
-    - **'user_mentions'**
-- **'extended_entities'**
-- **'quoted_status_id_str'**
-- **'quoted_status'**
-- **'quoted_status_permalink'**
+- **'timestamp_ms'**
+- **'possibly_sensitive'**
 
 ### Keys used for sentiment analysis:
 - **'text'** if `extended_tweet.full_text` does not exist
