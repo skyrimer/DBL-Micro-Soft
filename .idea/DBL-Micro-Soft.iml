@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Split 1/all_data" />
       <excludeFolder url="file://$MODULE_DIR$/interpreter" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (DBL-Micro-Soft)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
