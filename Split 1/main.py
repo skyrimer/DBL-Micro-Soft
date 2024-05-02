@@ -1,9 +1,14 @@
 from data_extraction import start_extraction
+from general_data_extraction import start_general_extraction
 
 
 def main():
-    # TODO: It takes a while to process the data (even with the 5 sample files). Might need to refactor the code.
-    start_extraction()
+    general_extraction: bool = True  # True = don't separate companies into files, False = each company independently
+    if general_extraction:
+        sample_data_only: bool = True  # True = only the (5) sample JSON files, False = all given data
+        start_general_extraction(sample_data_only)
+    else:
+        start_extraction()
 
 
 if __name__ == "__main__":

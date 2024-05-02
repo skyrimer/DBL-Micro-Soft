@@ -1,7 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 
-def create_db(user: str, database:str, password: str, host: str):
+
+def create_db(user: str, database: str, password: str, host: str):
     try:
         # Establish a connection to MySQL
         connection = mysql.connector.connect(
@@ -72,5 +73,6 @@ def create_db(user: str, database:str, password: str, host: str):
     cursor.execute(quotes)
     cursor.execute(hashtags)
     connection.close()
+
 
 create_db("nezox2um_dbl", "nezox2um_dbl", "OX8tAkhwowXp", "nezox2um.beget.tech")

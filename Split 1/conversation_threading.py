@@ -44,7 +44,7 @@ def process_tweets_from_file(file_path: str) -> List[Dict[str, Any]]:
                 tweet: Dict[str, Any] = json.loads(line.strip())
                 cleaned_tweets = add_tweet_to_replies(tweet, cleaned_tweets)
             except Exception as e:
-                print(e)
+                print(f'{type(e)}: {e}.')
                 continue
 
     return cleaned_tweets

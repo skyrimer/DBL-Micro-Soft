@@ -78,9 +78,8 @@ def read_file(file_name: str) -> Dict[str, List[Any]]:
                         item: Dict[str, Any] = json.loads(tweet)  # Converts from string to dictionary.
                         processed_item: Dict[str, Any] = start_cleaning(item)
                         data_to_append[company_name].append(processed_item)
-            except Exception as e:
-                print(e)
-                continue
+            except json.JSONDecodeError as e:
+                print(f'{type(e)}: {e}.')
     return data_to_append
 
 
@@ -97,16 +96,15 @@ def write_to_file(data: List[Any], company_name: str) -> None:
             file.write(json.dumps(item) + '\n')
 
 
-def delete_existing_file(company_name: str) -> None:
+def delete_existing_file(file_path: str) -> None:
     """
     Deletes the JSON file of the company if it exists.
-    :param company_name: the name of the company.
+    :param file_path: the path to the file.
     :return: nothing.
     """
-    file_path: str = fr'{current_directory}/airlines/{company_name}.json'
     if os.path.exists(file_path):
         os.remove(file_path)
-        print(f"'{company_name}.json' was deleted.")
+        print(f"'{file_path.split('/')[-1]}.json' was deleted.")
 
 
 def start_extraction() -> None:
@@ -116,7 +114,8 @@ def start_extraction() -> None:
     """
     # Resets the files to prevent duplicate data
     for company_name in company_ids.keys():
-        delete_existing_file(company_name)
+        company_file_path: str = fr'{os.getcwd()}/airlines/{company_name}.json'
+        delete_existing_file(company_file_path)
 
     # Distributes tweets to JSON files for different companies
     files_in_root: List[str] = list_files()
