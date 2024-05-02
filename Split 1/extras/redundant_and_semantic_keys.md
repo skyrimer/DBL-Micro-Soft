@@ -69,6 +69,7 @@
   - **'default_profile_image'**
 - **'place'**
   - **'country_code'**
+  - **some extras**
 - **'quote_count'**
 - **'reply_count'**
 - **'retweet_count'**
