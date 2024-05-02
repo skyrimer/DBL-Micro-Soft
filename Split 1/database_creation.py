@@ -1,15 +1,28 @@
+from os import getenv
 import mysql.connector
 from mysql.connector import Error
 
 
-def create_db(user: str, database: str, password: str, host: str):
+def create_db(user: str, database: str, password: str, host: str) -> None:
+    """
+    Creates a MySQL database with tables for Users, Tweets, Replies, and Quotes.
+
+    Args:
+        user: MySQL user.
+        database: Name of the database to connect.
+        password: Password for the MySQL user.
+        host: Host address of the MySQL server.
+
+    Returns:
+        None if successful, Error object if connection or table creation fails.
+    """
     try:
         # Establish a connection to MySQL
         connection = mysql.connector.connect(
-                user=user,
-                database=database,
-                password=password,
-                host=host,
+            user=user,
+            database=database,
+            password=password,
+            host=host,
         )
     except Error as e:
         return e
@@ -67,4 +80,27 @@ def create_db(user: str, database: str, password: str, host: str):
     connection.close()
 
 
-create_db("nezox2um_dbl", "nezox2um_dbl", "OX8tAkhwowXp", "nezox2um.beget.tech")
+if __name__ == "__main__":
+    user = getenv("DBL_USER")
+    assert (
+        user is not None
+    ), "DBL_USER is required but not found in environment variables"
+
+    database = getenv("DBL_DATABASE")
+    assert (
+        database is not None
+    ), "DBL_DATABASE is required but not found in environment variables"
+
+    password = getenv("DBL_PASSWORD")
+    assert (
+        password is not None
+    ), "DBL_PASSWORD is required but not found in environment variables"
+
+    host = getenv("DBL_HOST")
+    assert (
+        host is not None
+    ), "DBL_HOST is required but not found in environment variables"
+
+    print("Start database creation on the server")
+    create_db(user, database, password, host)
+    print("Database has been created")

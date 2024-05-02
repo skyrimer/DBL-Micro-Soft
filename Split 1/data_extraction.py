@@ -30,9 +30,7 @@ def company_related(tweet: str, company_name: str) -> bool:
     :param company_name: the company name to check.
     :return: True if related, False otherwise.
     """
-    if company_name in tweet or company_ids[company_name] in tweet:
-        return True
-    return False
+    return company_name in tweet or company_ids[company_name] in tweet
 
 
 def list_files() -> List[str]:
@@ -104,7 +102,7 @@ def delete_existing_file(file_path: str) -> None:
     """
     if os.path.exists(file_path):
         os.remove(file_path)
-        print(f"'{file_path.split('/')[-1]}' was deleted.")
+        print(f"{file_path.split('/')[-1]}' was deleted.")
 
 
 def start_extraction() -> None:
@@ -121,11 +119,11 @@ def start_extraction() -> None:
     files_in_root: List[str] = list_files()
     for json_file in files_in_root:
         tweets: Dict[str, List[Any]] = read_file(json_file)
-        for company_name in tweets.keys():
+        for company_name in tweets:
             write_to_file(tweets[company_name], company_name)
 
     # Creates conversation threads for each company
-    path_to_company_data: str = os.getcwd() + '/airlines/'
+    path_to_company_data: str = f'{os.getcwd()}/airlines/'
     files_list: List[str] = os.listdir(path_to_company_data)
     files_list.remove('_lufthansa.json')  # Only for my local file, not necessary otherwise
     for json_file in files_list:
