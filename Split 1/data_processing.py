@@ -116,8 +116,8 @@ def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
     # Recursion if the key is nested with 2+ levels (2+ dots in it)
     if '.' in child_key and parent_key in item.keys():
         item[parent_key] = delete_nested_key(item[parent_key], child_key)
-    if parent_key in item.keys() and child_key in item[parent_key].keys():
-        del item[parent_key][child_key]  # Deletes the deepest key
+    if parent_key in item.keys() and item[parent_key] is not None and child_key in item[parent_key].keys():
+            del item[parent_key][child_key]  # Deletes the deepest key
 
     return item
 
@@ -131,11 +131,16 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
 
     # A list of irrelevant keys to remove. Keys with a dot (".") represent nested keys.
     keys_to_remove: List[str] = [
+        'created_at',
         'id',
         'truncated',
+        'display_text_range',
         'in_reply_to_status_id',
         'in_reply_to_user_id',
+        'in_reply_to_user_id_str',
         'in_reply_to_screen_name',
+        'user.name',
+        'user.screen_name',
         'user.id',
         'user.url',
         'user.description',
@@ -165,22 +170,32 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         'user.favourites_count',
         'user.following',
         'extended_tweet.display_text_range',
-        'extended_tweet.entities.hashtags',
-        'extended_tweet.entities.urls',
-        'extended_tweet.entities.symbols',
-        'entities.hashtags',
-        'entities.urls',
-        'entities.symbols',
+        'extended_tweet.entities',
+        'entities',
         'quoted_status_id',
+        'quoted_status',
         'favorited',
+        'coordinates',
+        'place.attributes',
+        'place.bounding_box',
+        'place.country',
+        'place.full_name',
+        'place.id',
+        'place.name',
+        'place.place_type',
+        'place.url',
         'retweeted',
         'filter_level',
         'matching_rules',
         'geo',
         'contributors',
-        'timestamp_ms'
+        'is_quote_status',
+        'retweeted_status',
+        'quoted_status_id_str',
+        'quoted_status_permalink',
+        'retweeted_status',
+        'extended_entities'
     ]
-
     for key in keys_to_remove:
         # Remove non-nested keys instantly
         if key in item.keys():
