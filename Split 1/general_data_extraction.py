@@ -3,7 +3,6 @@ import os
 from typing import List, Dict, Any
 from data_processing import start_cleaning
 from data_extraction import delete_existing_file
-
 from tqdm.auto import tqdm
 
 
@@ -72,10 +71,10 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
         path_to_all_json_files: str = f"{os.getcwd()}/all_data/"
 
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
-    for file in tqdm(all_raw_json_files):
+    for file in tqdm(all_raw_json_files):  # noqa
         cleaned_data: List[str] = []
         tweets_from_file: List[Dict[str, Any]] = read_from_file(
-            path_to_all_json_files + file
+            path_to_all_json_files + file  # noqa
         )
-        cleaned_data.extend(start_cleaning(tweet) for tweet in tweets_from_file)
-        append_to_file(cleaned_data)
+        cleaned_data.extend(start_cleaning(tweet) for tweet in tweets_from_file)  # noqa
+        append_to_file(cleaned_data)  # noqa
