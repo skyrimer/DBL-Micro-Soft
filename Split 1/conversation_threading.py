@@ -11,15 +11,19 @@ def look_for_tweet(tweet: Dict[str, Any], list_of_tweets: List[Dict[str, Any]]):
     :return: True if a suitable (reply) tweet is found, False otherwise.
     """
     for item in list_of_tweets:
-        if item['id_str'] == tweet['in_reply_to_status_id_str']:
-            item.setdefault('replies', []).append(tweet)  # setdefault sets the value if it doesn't exist yet
+        if item["id_str"] == tweet["in_reply_to_status_id_str"]:
+            item.setdefault("replies", []).append(
+                tweet
+            )  # setdefault sets the value if it doesn't exist yet
             return True
-        elif 'replies' in item and look_for_tweet(tweet, item['replies']):
+        elif "replies" in item and look_for_tweet(tweet, item["replies"]):
             return True
     return False
 
 
-def add_tweet_to_replies(tweet: Dict[str, Any], list_of_tweets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_tweet_to_replies(
+    tweet: Dict[str, Any], list_of_tweets: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
     """
     Add the tweet to the reply array of another tweet (if found), otherwise append to the list of all tweets.
     :param tweet: the tweet to be added.
@@ -38,13 +42,13 @@ def process_tweets_from_file(file_path: str) -> List[Dict[str, Any]]:
     :return: the list of tweets from the file.
     """
     cleaned_tweets: List[Dict[str, Any]] = []
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         for line in file:
             try:
                 tweet: Dict[str, Any] = json.loads(line.strip())
                 cleaned_tweets = add_tweet_to_replies(tweet, cleaned_tweets)
             except Exception as e:
-                print(f'{type(e)}: {e}.')
+                print(f"{type(e)}: {e}.")
                 continue
 
     return cleaned_tweets
@@ -57,9 +61,9 @@ def write_tweets_to_file(cleaned_tweets, output_filename) -> None:
     :param output_filename: the location to save in.
     :return: nothing.
     """
-    with open(output_filename, 'w') as file:
+    with open(output_filename, "w") as file:
         for tweet in cleaned_tweets:
-            file.write(json.dumps(tweet) + '\n')
+            file.write(json.dumps(tweet) + "\n")
 
 
 def delete_existing_file(file_path: str) -> None:
@@ -68,7 +72,7 @@ def delete_existing_file(file_path: str) -> None:
     :param file_path: the path to the file.
     :return: nothing.
     """
-    file_path: str = fr'{file_path}'
+    file_path: str = rf"{file_path}"
     if os.path.exists(file_path):
         os.remove(file_path)
         print(f"'{file_path.split('/')[-1]}' was deleted.")
@@ -81,7 +85,7 @@ def start_creating_conversations(input_file_path: str) -> None:
     :return: nothing.
     """
     file_name: str = input_file_path.split("/")[-1]
-    out_file_path: str = f'conversations/cleaned_{file_name}'
+    out_file_path: str = f"conversations/cleaned_{file_name}"
 
     cleaned_tweets = process_tweets_from_file(input_file_path)
     write_tweets_to_file(cleaned_tweets, out_file_path)

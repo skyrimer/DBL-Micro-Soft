@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from data_processing import start_cleaning
 from conversation_threading import start_creating_conversations
 
-data_directory: str = r'/data/'
+data_directory: str = r"/data/"
 current_directory: str = os.getcwd()
 company_ids: Dict[str, str] = {
     "klm": "56377143",
@@ -19,7 +19,7 @@ company_ids: Dict[str, str] = {
     "singaporeair": "253340062",
     "qantas": "218730857",
     "etihadairways": "45621423",
-    "virginatlantic": "20626359"
+    "virginatlantic": "20626359",
 }
 
 
@@ -38,7 +38,7 @@ def list_files() -> List[str]:
     Gets all files from a directory.
     :return: the list of files from the directory.
     """
-    files_list: List[str] = os.listdir(current_directory+data_directory)
+    files_list: List[str] = os.listdir(current_directory + data_directory)
     return files_list
 
 
@@ -51,33 +51,35 @@ def read_file(file_name: str) -> Dict[str, List[Any]]:
 
     # Tweets related to each company in the file
     data_to_append: Dict[str, List[Any]] = {
-        'lufthansa': [],
-        'klm': [],
-        'airfrance': [],
-        'british_airways': [],
-        'americanair': [],
-        'airberlin': [],
-        'airberlin_assist': [],
-        'easyjet': [],
-        'ryanair': [],
-        'singaporeair': [],
-        'qantas': [],
-        'etihadairways': [],
-        'virginatlantic': []
+        "lufthansa": [],
+        "klm": [],
+        "airfrance": [],
+        "british_airways": [],
+        "americanair": [],
+        "airberlin": [],
+        "airberlin_assist": [],
+        "easyjet": [],
+        "ryanair": [],
+        "singaporeair": [],
+        "qantas": [],
+        "etihadairways": [],
+        "virginatlantic": [],
     }
 
-    with open(current_directory+data_directory+file_name, 'r') as file:
+    with open(current_directory + data_directory + file_name, "r") as file:
         file_content: str = file.read()
-        json_objects: List[str] = file_content.strip().split('\n')
+        json_objects: List[str] = file_content.strip().split("\n")
         for tweet in json_objects:
             try:
                 for company_name in company_ids.keys():
                     if company_related(tweet.lower(), company_name):
-                        item: Dict[str, Any] = json.loads(tweet)  # Converts from string to dictionary.
+                        item: Dict[str, Any] = json.loads(
+                            tweet
+                        )  # Converts from string to dictionary.
                         processed_item: Dict[str, Any] = start_cleaning(item)
                         data_to_append[company_name].append(processed_item)
             except json.JSONDecodeError as e:
-                print(f'{type(e)}: {e}.')
+                print(f"{type(e)}: {e}.")
     return data_to_append
 
 
@@ -88,10 +90,10 @@ def write_to_file(data: List[Any], company_name: str) -> None:
     :param company_name: the name of the company related to the tweets.
     :return: nothing.
     """
-    file_path: str = fr'{current_directory}/airlines/{company_name}.json'
-    with open(file_path, 'a', encoding='utf-8') as file:
+    file_path: str = rf"{current_directory}/airlines/{company_name}.json"
+    with open(file_path, "a", encoding="utf-8") as file:
         for item in data:
-            file.write(json.dumps(item) + '\n')
+            file.write(json.dumps(item) + "\n")
 
 
 def delete_existing_file(file_path: str) -> None:
@@ -112,7 +114,7 @@ def start_extraction() -> None:
     """
     # Resets the files to prevent duplicate data
     for company_name in company_ids.keys():
-        company_file_path: str = fr'{os.getcwd()}/airlines/{company_name}.json'
+        company_file_path: str = rf"{os.getcwd()}/airlines/{company_name}.json"
         delete_existing_file(company_file_path)
 
     # Distributes tweets to JSON files for different companies
@@ -123,8 +125,10 @@ def start_extraction() -> None:
             write_to_file(tweets[company_name], company_name)
 
     # Creates conversation threads for each company
-    path_to_company_data: str = f'{os.getcwd()}/airlines/'
+    path_to_company_data: str = f"{os.getcwd()}/airlines/"
     files_list: List[str] = os.listdir(path_to_company_data)
-    files_list.remove('_lufthansa.json')  # Only for my local file, not necessary otherwise
+    files_list.remove(
+        "_lufthansa.json"
+    )  # Only for my local file, not necessary otherwise
     for json_file in files_list:
-        start_creating_conversations(path_to_company_data+json_file)
+        start_creating_conversations(path_to_company_data + json_file)
