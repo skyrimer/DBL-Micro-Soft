@@ -18,11 +18,11 @@ def create_db(user: str, database: str, password: str, host: str):
             user_id VARCHAR(255) PRIMARY KEY,
             country_code VARCHAR(255),
             verified TINYINT NOT NULL,
-            followers_count BIGINT NOT NULL,
-            friends_count BIGINT NOT NULL,
-            listed_count BIGINT NOT NULL,
-            statuses_count BIGINT NOT NULL,
-            favourites_count BIGINT NOT NULL,
+            followers_count INT NOT NULL,
+            friends_count INT NOT NULL,
+            listed_count INT NOT NULL,
+            statuses_count INT NOT NULL,
+            favourites_count INT NOT NULL,
             creation_time TIMESTAMP NOT NULL,
             defaul_profile TINYINT NOT NULL,
             default_profile_image TINYINT NOT NULL            
@@ -47,16 +47,18 @@ def create_db(user: str, database: str, password: str, host: str):
         CREATE TABLE IF NOT EXISTS Replies(
             tweet_id VARCHAR(255) PRIMARY KEY,
             replied_tweet_id VARCHAR(255) NOT NULL,
-            reply_count BIGINT NOT NULL,
-            FOREIGN KEY (tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE
+            reply_count INT NOT NULL,
+            FOREIGN KEY (tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE,
+            FOREIGN KEY (replied_tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE
         );"""
 
     quotes = """
         CREATE TABLE IF NOT EXISTS Quotes(
             tweet_id VARCHAR(255) PRIMARY KEY,
             quoted_status_id VARCHAR(255) NOT NULL,
-            quote_count BIGINT NOT NULL,
-            FOREIGN KEY (tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE
+            quote_count INT NOT NULL,
+            FOREIGN KEY (tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE,
+            FOREIGN KEY (quoted_status_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE
         );"""
 
     cursor = connection.cursor()
