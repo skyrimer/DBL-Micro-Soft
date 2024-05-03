@@ -117,7 +117,7 @@ def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
     if '.' in child_key and parent_key in item.keys():
         item[parent_key] = delete_nested_key(item[parent_key], child_key)
     if parent_key in item.keys() and item[parent_key] is not None and child_key in item[parent_key].keys():
-            del item[parent_key][child_key]  # Deletes the deepest key
+        del item[parent_key][child_key]  # Deletes the deepest key
 
     return item
 
