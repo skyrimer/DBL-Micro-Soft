@@ -8,7 +8,7 @@ def main():
     )
     if general_extraction:
         sample_data_only: bool = (
-            True  # General extraction: True = only the (24) sample JSON files, False = all data
+            False  # General extraction: True = only the (24) sample JSON files, False = all data
         )
         start_general_extraction(sample_data_only)
     else:

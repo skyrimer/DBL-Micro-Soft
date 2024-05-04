@@ -202,7 +202,6 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         "contributors",
         "is_quote_status",
         "retweeted_status",
-        "quoted_status_id_str",
         "quoted_status_permalink",
         "retweeted_status",
         "extended_entities",
