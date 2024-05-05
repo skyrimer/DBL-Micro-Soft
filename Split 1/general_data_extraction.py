@@ -7,6 +7,8 @@ from tqdm.auto import tqdm
 
 current_directory: str = os.getcwd()
 
+all_tweet_id: set = set()
+
 
 def could_be_json(string: str) -> bool:
     """
@@ -47,7 +49,10 @@ def append_to_file(tweets_list: List[Dict[str, Any]]) -> None:
     )
     with open(output_file_path, "a", encoding="utf-8") as file:
         for tweet in tweets_list:
+            if not tweet.get("id_str") or tweet["id_str"] in all_tweet_id:
+                continue
             file.write(json.dumps(tweet) + ",\n")
+            all_tweet_id.add(tweet["id_str"])
 
 
 def start_general_extraction(sample_data_only: bool = True) -> None:
@@ -68,7 +73,9 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
     path_to_all_json_files: str = os.path.join(current_directory, json_folder)
 
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
-    for file in tqdm(all_raw_json_files, mininterval=5):  # noqa
+    for file in tqdm(all_raw_json_files, mininterval=1):  # noqa
+        if file == "all_clean_tweats.json":
+            continue
         cleaned_data: List[str] = []
         tweets_from_file: List[Dict[str, Any]] = read_from_file(
             os.path.join(path_to_all_json_files, file)
