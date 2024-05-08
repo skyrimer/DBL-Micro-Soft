@@ -24,6 +24,7 @@
   changed)
 - **'user.screen_name'** (users should be identified by id's, not handles)
 - **'user.url'** (won't be using profile urls in the analysis)
+- **'user.location'** (can be changed by users, might be misleading)
 - **'user.description'** (should refer to the tweet content rather than user's
   description when doing sentiment analysis)
 - **'user.utc_offset'** (won't be using in the analysis, also a deprecated
