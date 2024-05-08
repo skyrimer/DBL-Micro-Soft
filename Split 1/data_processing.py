@@ -1,111 +1,5 @@
 from typing import List, Dict, Any
-
-test_dict = {
-    "created_at": "Wed May 22 12:20:55 +0000 2019",
-    "id": 1131173091651072000,
-    "id_str": "1131173091651072000",
-    "text": "@BilalEksiTHY TK Elite Plus Helpdesk'e, Lufthansa ucuslarinda, Miles&amp;Smiles  statu mili kazan",
-    "source": '<a href="http://twitter.com" rel="nofollow">Twitter Web Client</a>',
-    "truncated": True,
-    "in_reply_to_status_id": None,
-    "in_reply_to_status_id_str": None,
-    "in_reply_to_user_id": 788882697955467266,
-    "in_reply_to_user_id_str": "788882697955467266",
-    "in_reply_to_screen_name": "BilalEksiTHY",
-    "user": {
-        "id": 58563850,
-        "id_str": "58563850",
-        "name": "Mustafa Kilicaslan",
-        "screen_name": "Mustafakilicasl",
-        "location": None,
-        "url": None,
-        "description": None,
-        "translator_type": "none",
-        "protected": False,
-        "verified": False,
-        "followers_count": 208,
-        "friends_count": 755,
-        "listed_count": 3,
-        "favourites_count": 74,
-        "statuses_count": 63,
-        "created_at": "Mon Jul 20 19:25:01 +0000 2009",
-        "utc_offset": None,
-        "time_zone": None,
-        "geo_enabled": False,
-        "lang": None,
-        "contributors_enabled": False,
-        "is_translator": False,
-        "profile_background_color": "131516",
-        "profile_background_image_url": "http://abs.twimg.com/images/themes/theme14/bg.gif",
-        "profile_background_image_url_https": "https://abs.twimg.com/images/themes/theme14/bg.gif",
-        "profile_background_tile": True,
-        "profile_link_color": "009999",
-        "profile_sidebar_border_color": "EEEEEE",
-        "profile_sidebar_fill_color": "EFEFEF",
-        "profile_text_color": "333333",
-        "profile_use_background_image": True,
-        "profile_image_url": "http://pbs.twimg.com/profile_images/1536749913/4Y6H7532_normal.JPG",
-        "profile_image_url_https": "https://pbs.twimg.com/profile_images/1536749913/4Y6H7532_normal.JPG",
-        "default_profile": False,
-        "default_profile_image": False,
-        "following": None,
-        "follow_request_sent": None,
-        "notifications": None,
-    },
-    "geo": None,
-    "coordinates": None,
-    "place": None,
-    "contributors": None,
-    "is_quote_status": False,
-    "extended_tweet": {
-        "full_text": "@BilalEksiTHY TK Elite Plus Helpdesk'e, Lufthansa ucuslarinda, Miles&amp;Smiles",
-        "display_text_range": [0, 275],
-        "entities": {
-            "hashtags": [],
-            "urls": [],
-            "user_mentions": [
-                {
-                    "screen_name": "BilalEksiTHY",
-                    "name": "Bilal EKŞİ",
-                    "id": 788882697955467266,
-                    "id_str": "788882697955467266",
-                    "indices": [0, 13],
-                }
-            ],
-            "symbols": [],
-        },
-    },
-    "quote_count": 0,
-    "reply_count": 0,
-    "retweet_count": 0,
-    "favorite_count": 0,
-    "entities": {
-        "hashtags": [],
-        "urls": [
-            {
-                "url": "https://t.co/f6eVSMhW1D",
-                "expanded_url": "https://twitter.com/i/web/status/1131173091651072000",
-                "display_url": "twitter.com/i/web/status/1…",
-                "indices": [121, 144],
-            }
-        ],
-        "user_mentions": [
-            {
-                "screen_name": "BilalEksiTHY",
-                "name": "Bilal EKŞİ",
-                "id": 788882697955467266,
-                "id_str": "788882697955467266",
-                "indices": [0, 13],
-            }
-        ],
-        "symbols": [],
-    },
-    "favorited": False,
-    "retweeted": False,
-    "filter_level": "low",
-    "lang": "tr",
-    "timestamp_ms": "1558527655886",
-}
+from datetime import datetime
 
 
 def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -205,6 +99,7 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         "quoted_status_permalink",
         "retweeted_status",
         "extended_entities",
+        "user.location",
     ]
     for key in keys_to_remove:
         # Remove non-nested keys instantly
@@ -232,10 +127,46 @@ def print_readable_dict(item: dict, indent: int = 0) -> None:
             print(" " * indent + f"\033[1m{key}:\033[0m {value}")  # Keys will be bold
 
 
-def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
+def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
     """
     Initializer function for data_processing.py.
     :param dictionary: the original dictionary to process.
     :return: the processed dictionary.
     """
-    return delete_unnecessary_keys(dictionary)
+    user = dictionary.get("user", {})
+    country_code = ""
+    if place := dictionary.get("place"):
+        country_code = place.get("country_code")
+
+    clean_dict = {
+        "user": {
+            "user_id": user.get("id_str"),
+            "verified": user.get("verified", False),
+            "followers_count": max(user.get("followers_count", 0), 0),
+            "friends_count": max(user.get("friends_count", 0), 0),
+            "statuses_count": max(user.get("statuses_count", 0), 0),
+            "created_at": user.get("created_at"),
+            "default_profile": int(user.get("default_profile", True)),
+            "default_profile_image": int(user.get("default_profile_image", True)),
+        }
+    }
+    if extended_tweet := dictionary.get("extended_tweet"):
+        text = extended_tweet.get("full_text", dictionary.get("text", ""))
+    else:
+        text = dictionary.get("text", "")
+    clean_dict["tweet"] = {
+        "tweet_id": dictionary.get("id_str"),
+        "text": text,
+        "lang": dictionary.get("lang"),
+        "creation_time": dictionary.get("created_at"),
+        "country_code": country_code,
+        "favorite_count": dictionary.get("favorite_count", 0),
+        "retweet_count": dictionary.get("retweet_count", 0),
+        "possibly_sensitive": dictionary.get("possibly_sensitive", False),
+        "replied_tweet_id": dictionary.get("in_reply_to_status_id_str"),
+        "replied_count": dictionary.get("replied_count", 0),
+        "quoted_status_id": dictionary.get("quoted_status_id"),
+        "quoted_count": dictionary.get("quoted_count", 0),
+        "category": category,
+    }
+    return clean_dict
