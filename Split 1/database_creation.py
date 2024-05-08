@@ -1,11 +1,9 @@
 from os import getenv
 import os
 import mysql.connector
-from mysql.connector import Error, InterfaceError, OperationalError
 import json
 from datetime import datetime
 from tqdm import tqdm
-import time
 
 
 # TODO: count connect disconnect
@@ -31,7 +29,7 @@ def connect_to_database(
         database=database_fill,
         password=password_fill,
         host=host_fill,
-        connect_timeout=5,
+        connect_timeout=10,
     )
 
 
@@ -43,7 +41,7 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
         user: MySQL user.
         database: Name of the database to connect.
         password: Password for the MySQL user.
-        host: Host address of the MySQL server.
+        # host: Host address of the MySQL server.
 
     Returns:
         None if successful, Error object if connection or table creation fails.
@@ -54,7 +52,6 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
 
     users: str = """ CREATE TABLE IF NOT EXISTS Users(
             user_id VARCHAR(255) PRIMARY KEY,
-            location VARCHAR(255),
             verified TINYINT NOT NULL,
             followers_count INT NOT NULL,
             friends_count INT NOT NULL,
@@ -73,12 +70,12 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
             country_code VARCHAR(255),
             favorite_count INT NOT NULL,
             retweet_count INT NOT NULL,
-            source_link VARCHAR(255),
             possibly_sensitive TINYINT,
             replied_tweet_id VARCHAR(255),
             reply_count INT NOT NULL,
             quoted_status_id VARCHAR(255),
             quote_count INT NOT NULL,
+            category VARCHAR(255) NOT NULL,
             FOREIGN KEY (user_id) REFERENCES Users(user_id)
         );"""
 
@@ -104,14 +101,14 @@ def insert_batch_data(cursor, batch_data):
         return
 
     insertion_user = """
-    INSERT IGNORE INTO Users(user_id, location, verified, followers_count, friends_count,
+    INSERT IGNORE INTO Users(user_id, verified, followers_count, friends_count,
     statuses_count, creation_time, default_profile, default_profile_image)
-    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES(%s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     insertion_tweets = """
     INSERT INTO Tweets(tweet_id, user_id, full_text, lang, creation_time, country_code, favorite_count,
-    retweet_count, source_link, possibly_sensitive, replied_tweet_id, reply_count, quoted_status_id, quote_count)
+    retweet_count, possibly_sensitive, replied_tweet_id, reply_count, quoted_status_id, quote_count, category)
     VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     user_data = []
@@ -136,82 +133,51 @@ def process_json_object(dict_):
         Tuple containing user data and tweet data extracted from the JSON object.
     """
 
-    if "delete" in dict_:
-        return None
-
-    user = dict_.get("user", {})
-
-    text = dict_.get(
-        "full_text", dict_.get("text", "")
-    )  # TODO: what do we do with empty text???
-    date_string = user.get("created_at", "")
-    date_object = (
-        datetime.strptime(date_string, "%a %b %d %H:%M:%S %z %Y")
-        if date_string
-        else None
-    )
-    timestamp = date_object.timestamp() if date_object else None
-
-    user_id = user.get("id_str", "")
-    location = user.get("location", "")
-    verified = user.get("verified", False)
-    followers_count = user.get("followers_count", 0)
-    friends_count = user.get("friends_count", 0)
-    statuses_count = user.get("statuses_count", 0)
-    default_profile = int(user.get("default_profile", True))
-    default_profile_image = int(user.get("default_profile_image", True))
+    user = dict_["user"]
+    tweet = dict_["tweet"]
 
     user_data = (
-        user_id,
-        location,
-        verified,
-        followers_count,
-        friends_count,
-        statuses_count,
-        timestamp,
-        default_profile,
-        default_profile_image,
+        user["user_id"],
+        user["verified"],
+        user["followers_count"],
+        user["friends_count"],
+        user["statuses_count"],
+        (
+            datetime.strptime(user["created_at"], "%a %b %d %H:%M:%S %z %Y")
+            if user["created_at"]
+            else 0
+        ),
+        user["default_profile"],
+        user["default_profile_image"],
     )
-
-    tweet_id = dict_["id_str"]
-    lang = dict_.get("lang", "en")
-    creation_time = int(dict_.get("timestamp_ms", 0)) // 1000
-    country_code = (
-        None if dict_.get("place") is None else dict_["place"]["country_code"]
-    )
-    favorite_count = dict_.get("favorite_count", 0)
-    retweet_count = dict_.get("retweet_count", 0)
-    source_link = dict_.get("source", "")
-    possibly_sensitive = dict_.get("possibly_sensitive", False)
-    replied_tweet_id = dict_.get("in_reply_to_status_id_str")
-    replied_count = dict_.get("replied_count", 0)
-    quoted_tweet_id = dict_.get("quoted_tweet_id_str")
-    quoted_count = dict_.get("quoted_count", 0)
 
     tweet_data = (
-        tweet_id,
-        user_id,
-        text,
-        lang,
-        creation_time,
-        country_code,
-        favorite_count,
-        retweet_count,
-        source_link,
-        possibly_sensitive,
-        replied_tweet_id,
-        replied_count,
-        quoted_tweet_id,
-        quoted_count,
+        tweet["tweet_id"],
+        user["user_id"],
+        tweet["text"],
+        tweet["lang"],
+        (
+            datetime.strptime(tweet["creation_time"], "%a %b %d %H:%M:%S %z %Y")
+            if tweet["creation_time"]
+            else 0
+        ),
+        tweet["country_code"],
+        tweet["favorite_count"],
+        tweet["retweet_count"],
+        tweet["possibly_sensitive"],
+        tweet["replied_tweet_id"],
+        tweet["replied_count"],
+        tweet["quoted_status_id"],
+        tweet["quoted_count"],
+        tweet["category"],
     )
-
     return (user_data, tweet_data)
 
 
 def database_fill(
     user_fill: str, database_fill: str, password_fill: str, host_fill: str
 ):
-    batch_size = 1000
+    batch_size = 10_000
     with open(
         os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
         "r",
@@ -225,7 +191,7 @@ def database_fill(
             tweet_dict = json.loads(line[:-2])
             if data := process_json_object(tweet_dict):
                 batch_data.append(data)
-            if len(batch_data) == batch_size:
+            if len(batch_data) >= batch_size:
                 insert_batch_data(cursor, batch_data)
                 batch_data = []
         if batch_data:
@@ -265,6 +231,21 @@ def check_env_vars() -> (str, str, str, str):  # type: ignore
 
 if __name__ == "__main__":
     user, database, password, host = check_env_vars()
+    go_balistic = True
+    if go_balistic:
+        connection = connect_to_database(user, database, password, host)
+        cursor = connection.cursor()
+
+        # Drop the database
+        cursor.execute("DROP TABLE IF EXISTS Tweets")
+
+        # Drop the Users table
+        cursor.execute("DROP TABLE IF EXISTS Users")
+
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()
+
     print("Start database creation on the server")
     create_db(user, database, password, host)
     print("Database has been created")

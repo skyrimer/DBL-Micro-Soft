@@ -28,12 +28,11 @@ def read_from_file(file_name: str) -> List[Dict[str, Any]]:
     with open(file_name, "r") as file:
         tweets_in_file: List[Dict[str, Any]] = []
         for line in file:
-            line: str = line.strip()
+            line: str = line.strip().removesuffix(",")
             # do not consider anything that is not json
             if could_be_json(line):
                 tweet: Dict[str, Any] = json.loads(line)
                 tweets_in_file.append(tweet)
-
         return tweets_in_file
 
 
@@ -43,16 +42,37 @@ def append_to_file(tweets_list: List[Dict[str, Any]]) -> None:
     :param tweets_list: List of dictionaries representing tweets to append.
     :return: None.
     """
-    # output_file_path: str = f"{os.getcwd()}/data/cleaned_tweets_combined.json"
     output_file_path: str = os.path.join(
         current_directory, "data", "cleaned_tweets_combined.json"
     )
     with open(output_file_path, "a", encoding="utf-8") as file:
         for tweet in tweets_list:
-            if not tweet.get("id_str") or tweet["id_str"] in all_tweet_id:
+            if not valid_tweet(tweet):
                 continue
             file.write(json.dumps(tweet) + ",\n")
-            all_tweet_id.add(tweet["id_str"])
+            all_tweet_id.add(tweet["tweet"]["tweet_id"])
+
+
+def valid_tweet(tweet: Dict[str, Any]) -> bool:
+    """
+    Check if a tweet is valid.
+
+    Args:
+        tweet (dict): A dictionary containing tweet and user information.
+    Returns:
+        bool: True if the tweet realistic, False otherwise.
+    """
+
+    return all(
+        [
+            tweet["tweet"]["tweet_id"],
+            tweet["user"]["user_id"],
+            tweet["tweet"]["tweet_id"] not in all_tweet_id,
+            tweet["user"]["followers_count"] >= 0,
+            tweet["user"]["friends_count"] >= 0,
+            tweet["user"]["statuses_count"] >= 0,
+        ]
+    )
 
 
 def start_general_extraction(sample_data_only: bool = True) -> None:
@@ -62,7 +82,6 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
     :return: nothing.
     """
     # Resets output file
-    # output_file_path: str = f"{os.getcwd()}/data/cleaned_tweets_combined.json"
     output_file_path: str = os.path.join(
         current_directory, "data", "cleaned_tweets_combined.json"
     )
@@ -74,11 +93,23 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
 
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
     for file in tqdm(all_raw_json_files, mininterval=1):  # noqa
-        if file == "all_clean_tweats.json":
+        # old backup
+        if file == "all_clean_tweets.json":
             continue
-        cleaned_data: List[str] = []
         tweets_from_file: List[Dict[str, Any]] = read_from_file(
             os.path.join(path_to_all_json_files, file)
         )
-        cleaned_data.extend(start_cleaning(tweet) for tweet in tweets_from_file)  # noqa
-        append_to_file(cleaned_data)  # noqa
+        cleaned_tweets_list = []
+        for tweet in tweets_from_file:
+            if quote := tweet.get("quoted_status"):
+                cleaned_tweets_list.append(start_cleaning(quote, "quote"))
+            if original_tweet := tweet.get("retweeted_status"):
+                cleaned_tweets_list.extend(
+                    (
+                        start_cleaning(original_tweet, "tweet"),
+                        start_cleaning(tweet, "retweet"),
+                    )
+                )
+            else:
+                cleaned_tweets_list.append(start_cleaning(tweet, "tweet"))
+        append_to_file(cleaned_tweets_list)  # noqa
