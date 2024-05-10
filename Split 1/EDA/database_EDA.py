@@ -18,7 +18,8 @@ def database_read(db_username, db_password, db_host, db_port, db_name):
     """
 
     engine = create_engine(
-        f'mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}')
+        f"mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
+    )
 
     # Add columns in SELECT to retrieve data from the Users and Tweets tables
     query = """
@@ -28,16 +29,15 @@ def database_read(db_username, db_password, db_host, db_port, db_name):
     GROUP BY u.user_id
     """
 
-    df = pd.read_sql(query, engine)
-    return df
+    return pd.read_sql(query, engine)
 
 
 # Unsafe, but did not have to time to set environment variables
 db_username = "nezox2um_dbl"
-db_password = 'OX8tAkhwowXp'
+db_password = "OX8tAkhwowXp"
 db_host = "nezox2um.beget.tech"
-db_port = '3306'
-db_name = 'nezox2um_dbl'
+db_port = "3306"
+db_name = "nezox2um_dbl"
 
 
 df = database_read(db_username, db_password, db_host, db_port, db_name)

@@ -51,7 +51,7 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     )
 
     users: str = """ CREATE TABLE IF NOT EXISTS Users(
-            user_id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(200) PRIMARY KEY,
             verified TINYINT NOT NULL,
             followers_count INT NOT NULL,
             friends_count INT NOT NULL,
@@ -62,20 +62,20 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
         );"""
 
     tweets: str = """ CREATE TABLE IF NOT EXISTS Tweets(
-            tweet_id VARCHAR(255) PRIMARY KEY,
-            user_id VARCHAR(255) NOT NULL,
-            full_text VARCHAR(255) NOT NULL,
-            lang VARCHAR(281) NOT NULL,
+            tweet_id VARCHAR(200) PRIMARY KEY,
+            user_id VARCHAR(200) NOT NULL,
+            full_text TEXT NOT NULL,
+            lang VARCHAR(200) NOT NULL,
             creation_time TIMESTAMP NOT NULL,
-            country_code VARCHAR(255),
+            country_code VARCHAR(200),
             favorite_count INT NOT NULL,
             retweet_count INT NOT NULL,
             possibly_sensitive TINYINT,
-            replied_tweet_id VARCHAR(255),
+            replied_tweet_id VARCHAR(200),
             reply_count INT NOT NULL,
-            quoted_status_id VARCHAR(255),
+            quoted_status_id VARCHAR(200),
             quote_count INT NOT NULL,
-            category VARCHAR(255) NOT NULL,
+            category ENUM('tweet', 'retweet', 'quote') NOT NULL,
             FOREIGN KEY (user_id) REFERENCES Users(user_id)
         );"""
 
@@ -166,7 +166,7 @@ def process_json_object(dict_):
         tweet["retweet_count"],
         tweet["possibly_sensitive"],
         tweet["replied_tweet_id"],
-        tweet["replied_count"],
+        tweet["reply_count"],
         tweet["quoted_status_id"],
         tweet["quoted_count"],
         tweet["category"],
@@ -231,8 +231,9 @@ def check_env_vars() -> (str, str, str, str):  # type: ignore
 
 if __name__ == "__main__":
     user, database, password, host = check_env_vars()
-    go_balistic = True
-    if go_balistic:
+    user, database = "nezox2um_test", "nezox2um_test"
+    drop_database = True
+    if drop_database:
         connection = connect_to_database(user, database, password, host)
         cursor = connection.cursor()
 
@@ -245,7 +246,6 @@ if __name__ == "__main__":
         # Close the cursor and connection
         cursor.close()
         connection.close()
-
     print("Start database creation on the server")
     create_db(user, database, password, host)
     print("Database has been created")
