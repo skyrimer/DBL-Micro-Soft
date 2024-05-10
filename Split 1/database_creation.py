@@ -51,7 +51,7 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     )
 
     users: str = """ CREATE TABLE IF NOT EXISTS Users(
-            user_id VARCHAR(21) PRIMARY KEY,
+            user_id VARCHAR(20) PRIMARY KEY,
             verified TINYINT NOT NULL,
             followers_count INT NOT NULL,
             friends_count INT NOT NULL,
@@ -62,20 +62,19 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
         );"""
 
     tweets: str = """ CREATE TABLE IF NOT EXISTS Tweets(
-            tweet_id VARCHAR(21) PRIMARY KEY,
-            user_id VARCHAR(21) NOT NULL,
-            full_text TEXT NOT NULL,
+            tweet_id VARCHAR(20) PRIMARY KEY,
+            user_id VARCHAR(20) NOT NULL,
+            full_text VARCHAR(280) NOT NULL,
             lang VARCHAR(20) NOT NULL,
             creation_time TIMESTAMP NOT NULL,
-            country_code VARCHAR(3),
+            country_code VARCHAR(2),
             favorite_count INT NOT NULL,
             retweet_count INT NOT NULL,
             possibly_sensitive TINYINT(1),
-            replied_tweet_id VARCHAR(21),
+            replied_tweet_id VARCHAR(20),
             reply_count INT NOT NULL,
-            quoted_status_id VARCHAR(21),
+            quoted_status_id VARCHAR(20),
             quote_count INT NOT NULL,
-            category ENUM('tweet', 'retweet', 'quote') NOT NULL,
             FOREIGN KEY (user_id) REFERENCES Users(user_id)
         );"""
 
@@ -96,7 +95,6 @@ def insert_batch_data(cursor, batch_data):
     Returns:
         None
     """
-
     if not batch_data:
         return
 
