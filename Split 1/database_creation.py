@@ -51,29 +51,29 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     )
 
     users: str = """ CREATE TABLE IF NOT EXISTS Users(
-            user_id VARCHAR(200) PRIMARY KEY,
+            user_id VARCHAR(21) PRIMARY KEY,
             verified TINYINT NOT NULL,
             followers_count INT NOT NULL,
             friends_count INT NOT NULL,
             statuses_count INT NOT NULL,
             creation_time TIMESTAMP NOT NULL,
-            default_profile TINYINT NOT NULL,
-            default_profile_image TINYINT NOT NULL            
+            default_profile TINYINT(1) NOT NULL,
+            default_profile_image TINYINT(1) NOT NULL            
         );"""
 
     tweets: str = """ CREATE TABLE IF NOT EXISTS Tweets(
-            tweet_id VARCHAR(200) PRIMARY KEY,
-            user_id VARCHAR(200) NOT NULL,
+            tweet_id VARCHAR(21) PRIMARY KEY,
+            user_id VARCHAR(21) NOT NULL,
             full_text TEXT NOT NULL,
-            lang VARCHAR(200) NOT NULL,
+            lang VARCHAR(20) NOT NULL,
             creation_time TIMESTAMP NOT NULL,
-            country_code VARCHAR(200),
+            country_code VARCHAR(3),
             favorite_count INT NOT NULL,
             retweet_count INT NOT NULL,
-            possibly_sensitive TINYINT,
-            replied_tweet_id VARCHAR(200),
+            possibly_sensitive TINYINT(1),
+            replied_tweet_id VARCHAR(21),
             reply_count INT NOT NULL,
-            quoted_status_id VARCHAR(200),
+            quoted_status_id VARCHAR(21),
             quote_count INT NOT NULL,
             category ENUM('tweet', 'retweet', 'quote') NOT NULL,
             FOREIGN KEY (user_id) REFERENCES Users(user_id)
