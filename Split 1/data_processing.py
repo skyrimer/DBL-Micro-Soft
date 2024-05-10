@@ -1,5 +1,4 @@
 from typing import List, Dict, Any
-from datetime import datetime
 
 
 def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -47,6 +46,7 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         "user.screen_name",
         "user.id",
         "user.url",
+        "user.location",
         "user.description",
         "user.utc_offset",
         "user.time_zone",
@@ -73,12 +73,12 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         "user.listed_count",
         "user.favourites_count",
         "user.following",
+        "entities",
         "extended_tweet.display_text_range",
         "extended_tweet.entities",
         "extended_tweet.extended_entities",
-        "entities",
-        "quoted_status_id",
-        "quoted_status",
+        # "quoted_status_id",
+        # "quoted_status",
         "favorited",
         "coordinates",
         "place.attributes",
@@ -99,7 +99,6 @@ def delete_unnecessary_keys(item: Dict[str, Any]) -> Dict[str, Any]:
         "quoted_status_permalink",
         "retweeted_status",
         "extended_entities",
-        "user.location",
     ]
     for key in keys_to_remove:
         # Remove non-nested keys instantly
@@ -162,6 +161,7 @@ def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
         "country_code": country_code,
         "favorite_count": dictionary.get("favorite_count", 0),
         "retweet_count": dictionary.get("retweet_count", 0),
+        "reply_count": dictionary.get("reply_count", 0),
         "possibly_sensitive": dictionary.get("possibly_sensitive", False),
         "replied_tweet_id": dictionary.get("in_reply_to_status_id_str"),
         "replied_count": dictionary.get("replied_count", 0),
