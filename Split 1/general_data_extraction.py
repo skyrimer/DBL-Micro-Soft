@@ -66,8 +66,9 @@ def valid_tweet(tweet: Dict[str, Any]) -> bool:
     return all(
         [
             tweet["tweet"]["tweet_id"],
-            tweet["user"]["user_id"],
+            # tweet["tweet"]["lang"] != "un", maybe for semantic only
             tweet["tweet"]["tweet_id"] not in all_tweet_id,
+            tweet["user"]["user_id"],
             tweet["user"]["followers_count"] >= 0,
             tweet["user"]["friends_count"] >= 0,
             tweet["user"]["statuses_count"] >= 0,

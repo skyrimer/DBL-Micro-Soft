@@ -132,7 +132,7 @@ def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
     :return: the processed dictionary.
     """
     user = dictionary.get("user", {})
-    country_code = ""
+    country_code = "un"
     if place := dictionary.get("place"):
         country_code = place.get("country_code")
 
@@ -155,7 +155,7 @@ def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
     clean_dict["tweet"] = {
         "tweet_id": dictionary.get("id_str"),
         "text": text,
-        "lang": dictionary.get("lang"),
+        "lang": dictionary.get("lang", "un"),
         "creation_time": dictionary.get("created_at"),
         "country_code": country_code,
         "favorite_count": dictionary.get("favorite_count", 0),
@@ -165,7 +165,7 @@ def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
         "replied_tweet_id": dictionary.get("in_reply_to_status_id_str"),
         "replied_count": dictionary.get("replied_count", 0),
         "quoted_status_id": dictionary.get("quoted_status_id"),
-        "quoted_count": dictionary.get("quoted_count", 0),
+        "quote_count": dictionary.get("quote_count", 0),
         "category": category,
     }
     return clean_dict
