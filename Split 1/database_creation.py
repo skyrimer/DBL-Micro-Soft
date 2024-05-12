@@ -64,8 +64,8 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     tweets: str = """ CREATE TABLE IF NOT EXISTS Tweets(
             tweet_id VARCHAR(20) PRIMARY KEY,
             user_id VARCHAR(20) NOT NULL,
-            full_text VARCHAR(280) NOT NULL,
-            lang VARCHAR(20) NOT NULL,
+            full_text TEXT NOT NULL,
+            lang CHAR(2) NOT NULL,
             creation_time TIMESTAMP NOT NULL,
             country_code VARCHAR(2),
             favorite_count INT NOT NULL,
@@ -106,8 +106,8 @@ def insert_batch_data(cursor, batch_data):
 
     insertion_tweets = """
     INSERT INTO Tweets(tweet_id, user_id, full_text, lang, creation_time, country_code, favorite_count,
-    retweet_count, possibly_sensitive, replied_tweet_id, reply_count, quoted_status_id, quote_count, category)
-    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    retweet_count, possibly_sensitive, replied_tweet_id, reply_count, quoted_status_id, quote_count)
+    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     user_data = []
     tweet_data = []
@@ -166,8 +166,7 @@ def process_json_object(dict_):
         tweet["replied_tweet_id"],
         tweet["reply_count"],
         tweet["quoted_status_id"],
-        tweet["quoted_count"],
-        tweet["category"],
+        tweet["quote_count"],
     )
     return (user_data, tweet_data)
 
@@ -229,7 +228,7 @@ def check_env_vars() -> (str, str, str, str):  # type: ignore
 
 if __name__ == "__main__":
     user, database, password, host = check_env_vars()
-    user, database = "nezox2um_test", "nezox2um_test"
+    # user, database = "nezox2um_test", "nezox2um_test"
     drop_database = True
     if drop_database:
         connection = connect_to_database(user, database, password, host)
