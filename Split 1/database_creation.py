@@ -4,11 +4,13 @@ import mysql.connector
 import json
 from datetime import datetime
 from tqdm import tqdm
+import sqlite3
+from sqlite3 import Error
 
 
 # TODO: count connect disconnect
 def connect_to_database(
-    user_fill: str, database_fill: str, password_fill: str, host_fill: str
+        user_fill: str, database_fill: str, password_fill: str, host_fill: str
 ) -> mysql.connector.connection.MySQLConnection:
     """
     Connect to a database using the provided credentials.
@@ -79,6 +81,43 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
         );"""
 
     cursor = connection.cursor()
+    cursor.execute(users)
+    cursor.execute(tweets)
+    cursor.close()
+
+
+def create_db_sqllite3(file_name) -> None:
+    connection = sqlite3.connect(file_name)
+    cursor = connection.cursor()
+
+    users: str = """ CREATE TABLE IF NOT EXISTS Users(
+            user_id TEXT PRIMARY KEY,
+            verified INTEGER NOT NULL,
+            followers_count INTEGER NOT NULL,
+            friends_count INTEGER NOT NULL,
+            statuses_count INTEGER NOT NULL,
+            creation_time BLOB NOT NULL,
+            default_profile INTEGER NOT NULL,
+            default_profile_image INTEGER NOT NULL            
+        );"""
+
+    tweets: str = """ CREATE TABLE IF NOT EXISTS Tweets(
+            tweet_id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            full_text TEXT NOT NULL,
+            lang TEXT NOT NULL,
+            creation_time BLOB NOT NULL,
+            country_code TEXT,
+            favorite_count INT NOT NULL,
+            retweet_count INT NOT NULL,
+            possibly_sensitive INT,
+            replied_tweet_id TEXT,
+            reply_count INT NOT NULL,
+            quoted_status_id TEXT,
+            quote_count INT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES Users(user_id)
+        );"""
+
     cursor.execute(users)
     cursor.execute(tweets)
     cursor.close()
@@ -172,16 +211,38 @@ def process_json_object(dict_):
 
 
 def database_fill(
-    user_fill: str, database_fill: str, password_fill: str, host_fill: str
+        user_fill: str, database_fill: str, password_fill: str, host_fill: str
 ):
     batch_size = 10_000
     with open(
-        os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
-        "r",
+            os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
+            "r",
     ) as file:
         connection = connect_to_database(
             user_fill, database_fill, password_fill, host_fill
         )
+        cursor = connection.cursor()
+        batch_data = []
+        for line in tqdm(file, desc="Processing", mininterval=5):
+            tweet_dict = json.loads(line[:-2])
+            if data := process_json_object(tweet_dict):
+                batch_data.append(data)
+            if len(batch_data) >= batch_size:
+                insert_batch_data(cursor, batch_data)
+                batch_data = []
+        if batch_data:
+            insert_batch_data(cursor, batch_data)
+    cursor.close()
+    connection.close()
+
+
+def database_fill_sqllite3(file_name: str):
+    batch_size = 10_000
+    with open(
+            os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
+            "r",
+    ) as file:
+        connection = sqlite3.connect(file_name)
         cursor = connection.cursor()
         batch_data = []
         for line in tqdm(file, desc="Processing", mininterval=5):
@@ -213,7 +274,7 @@ def check_given_var(env_var_str: str) -> str:
 
     env_var = getenv(env_var_str)
     assert (
-        env_var is not None
+            env_var is not None
     ), f"{env_var_str} is required but not found in environment variables"
     return env_var
 
@@ -227,9 +288,12 @@ def check_env_vars() -> (str, str, str, str):  # type: ignore
 
 
 if __name__ == "__main__":
+
     user, database, password, host = check_env_vars()
     # user, database = "nezox2um_test", "nezox2um_test"
-    drop_database = True
+    drop_database = False
+    local_database = True
+    file_name = "aviation.db"
     if drop_database:
         connection = connect_to_database(user, database, password, host)
         cursor = connection.cursor()
@@ -243,9 +307,16 @@ if __name__ == "__main__":
         # Close the cursor and connection
         cursor.close()
         connection.close()
-    print("Start database creation on the server")
-    create_db(user, database, password, host)
-    print("Database has been created")
-    print("Start database data insertion")
-    database_fill(user, database, password, host)
-    print("Data insertion finished")
+        print("Start database creation on the server")
+        create_db(user, database, password, host)
+        print("Database has been created")
+        print("Start database data insertion")
+        database_fill(user, database, password, host)
+        print("Data insertion finished")
+    if local_database:
+        print("Start local database creation")
+        create_db_sqllite3(file_name)
+        print("Local database has been created")
+        print("Start local database data insertion")
+        database_fill(file_name)
+        print("Local data insertion finished")
