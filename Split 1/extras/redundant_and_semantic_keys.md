@@ -79,8 +79,7 @@
 - **'extended_tweet.display_text_range'** (see `diplay_text_range`)
 - **'extended_tweet.entities'** (see `entities`)
 - **'extended_tweet.extended_entities'** (see `entities`)
-- **'quoted_status_id'** (TODO: ADD REASON)
-- **'quoted_status'** (TODO: ADD REASON)
+- **'quoted_status'** (can be identified by presence of column 'quoted_status_id')
 - **'favorited'** (authorised users only, not needed for analysis)
 - **'coordinates'** (outside the scope of our abilities to analyze)
 - **'place.attributes'** (we will use only place.country_code for geo analysis)
@@ -129,6 +128,7 @@
 - **'retweet_count'**
 - **'favorite_count'**
 - **'lang'**
+- **'quoted_status_id'**
 - **'extended_tweet'**
     - **'full_text'**
 - **'timestamp_ms'**
