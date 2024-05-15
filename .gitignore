@@ -161,6 +161,8 @@ cython_debug/
 
 /data/*
 /playingaround
+# Raw data and database
 */all_data/
 all_clean_tweets.json
 cleaned_tweets_combined.json
+aviation.db
