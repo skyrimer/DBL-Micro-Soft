@@ -1,6 +1,6 @@
 from os import getenv
 import os
-import mysql.connector
+# import mysql.connector
 import json
 from datetime import datetime
 from tqdm import tqdm
@@ -10,8 +10,8 @@ from sqlite3 import Error
 
 # TODO: count connect disconnect
 def connect_to_database(
-        user_fill: str, database_fill: str, password_fill: str, host_fill: str
-) -> mysql.connector.connection.MySQLConnection:
+    user_fill: str, database_fill: str, password_fill: str, host_fill: str
+):
     """
     Connect to a database using the provided credentials.
 
@@ -25,14 +25,14 @@ def connect_to_database(
         mysql.connector.connection.MySQLConnection: A connection to the database.
 
     """
-
-    return mysql.connector.connect(
-        user=user_fill,
-        database=database_fill,
-        password=password_fill,
-        host=host_fill,
-        connect_timeout=10,
-    )
+    return
+    # return mysql.connector.connect(
+    #     user=user_fill,
+    #     database=database_fill,
+    #     password=password_fill,
+    #     host=host_fill,
+    #     connect_timeout=10,
+    # )
 
 
 def create_db(user: str, database: str, password: str, host: str) -> None:
@@ -48,7 +48,7 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     Returns:
         None if successful, Error object if connection or table creation fails.
     """
-    connection: mysql.connector.connection.MySQLConnection = connect_to_database(
+    connection = connect_to_database(
         user, database, password, host
     )
 
@@ -158,6 +158,41 @@ def insert_batch_data(cursor, batch_data):
     cursor.executemany(insertion_tweets, tweet_data)
     cursor._cnx.commit()
 
+def insert_batch_data_sqlite3(cursor, batch_data):
+    """
+    Inserts batch data into Users and Tweets tables.
+
+    Args:
+        cursor: Database cursor to execute SQL queries.
+        batch_data: List of tuples containing user and tweet data to be inserted.
+
+    Returns:
+        None
+    """
+    if not batch_data:
+        return
+
+    insertion_user = """
+    INSERT OR IGNORE INTO Users(user_id, verified, followers_count, friends_count,
+    statuses_count, creation_time, default_profile, default_profile_image)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+    """
+
+    insertion_tweets = """
+    INSERT INTO Tweets(tweet_id, user_id, full_text, lang, creation_time, country_code, favorite_count,
+    retweet_count, possibly_sensitive, replied_tweet_id, reply_count, quoted_status_id, quote_count)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    """
+    user_data = []
+    tweet_data = []
+    for data in batch_data:
+        user_data.append(data[0])
+        tweet_data.append(data[1])
+
+    cursor.executemany(insertion_user, user_data)
+    cursor.executemany(insertion_tweets, tweet_data)
+    cursor.connection.commit()
+
 
 def process_json_object(dict_):
     """
@@ -211,12 +246,12 @@ def process_json_object(dict_):
 
 
 def database_fill(
-        user_fill: str, database_fill: str, password_fill: str, host_fill: str
+    user_fill: str, database_fill: str, password_fill: str, host_fill: str
 ):
     batch_size = 10_000
     with open(
-            os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
-            "r",
+        os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
+        "r",
     ) as file:
         connection = connect_to_database(
             user_fill, database_fill, password_fill, host_fill
@@ -236,13 +271,13 @@ def database_fill(
     connection.close()
 
 
-def database_fill_sqllite3(file_name: str):
+def database_fill_sqllite3(db_path: str):
     batch_size = 10_000
     with open(
-            os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
-            "r",
+        os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
+        "r",
     ) as file:
-        connection = sqlite3.connect(file_name)
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         batch_data = []
         for line in tqdm(file, desc="Processing", mininterval=5):
@@ -254,6 +289,28 @@ def database_fill_sqllite3(file_name: str):
                 batch_data = []
         if batch_data:
             insert_batch_data(cursor, batch_data)
+    cursor.close()
+    connection.close()
+
+
+def database_fill_sqllite3(file_name: str):
+    batch_size = 10_000
+    with open(
+        os.path.join(os.getcwd(), "data", "cleaned_tweets_combined.json"),
+        "r",
+    ) as file:
+        connection = sqlite3.connect(file_name)
+        cursor = connection.cursor()
+        batch_data = []
+        for line in tqdm(file, desc="Processing", mininterval=5):
+            tweet_dict = json.loads(line[:-2])
+            if data := process_json_object(tweet_dict):
+                batch_data.append(data)
+            if len(batch_data) >= batch_size:
+                insert_batch_data_sqlite3(cursor, batch_data)
+                batch_data = []
+        if batch_data:
+            insert_batch_data_sqlite3(cursor, batch_data)
     cursor.close()
     connection.close()
 
@@ -274,7 +331,7 @@ def check_given_var(env_var_str: str) -> str:
 
     env_var = getenv(env_var_str)
     assert (
-            env_var is not None
+        env_var is not None
     ), f"{env_var_str} is required but not found in environment variables"
     return env_var
 
@@ -293,7 +350,6 @@ if __name__ == "__main__":
     # user, database = "nezox2um_test", "nezox2um_test"
     drop_database = False
     local_database = True
-    file_name = "aviation.db"
     if drop_database:
         connection = connect_to_database(user, database, password, host)
         cursor = connection.cursor()
@@ -314,9 +370,11 @@ if __name__ == "__main__":
         database_fill(user, database, password, host)
         print("Data insertion finished")
     if local_database:
+        file_name = "aviation.db"
+        file_path = os.path.join(os.getcwd(), "data", file_name)
         print("Start local database creation")
-        create_db_sqllite3(file_name)
+        create_db_sqllite3(file_path)
         print("Local database has been created")
         print("Start local database data insertion")
-        database_fill(file_name)
+        database_fill_sqllite3(file_path)
         print("Local data insertion finished")
