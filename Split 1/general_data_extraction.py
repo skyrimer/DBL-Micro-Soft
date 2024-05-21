@@ -1,8 +1,9 @@
 import json
 import os
-from typing import List, Dict, Any
-from data_processing import start_cleaning
+from typing import Any, Dict, List
+
 from data_extraction import delete_existing_file
+from data_processing import start_cleaning
 from tqdm.auto import tqdm
 
 current_directory: str = os.getcwd()
@@ -43,7 +44,7 @@ def append_to_file(tweets_list: List[Dict[str, Any]]) -> None:
     :return: None.
     """
     output_file_path: str = os.path.join(
-        current_directory, "data", "cleaned_tweets_combined.json"
+        "data_processed", "cleaned_tweets_combined.json"
     )
     with open(output_file_path, "a", encoding="utf-8") as file:
         for tweet in tweets_list:
@@ -66,7 +67,6 @@ def valid_tweet(tweet: Dict[str, Any]) -> bool:
     return all(
         [
             tweet["tweet"]["tweet_id"],
-            # tweet["tweet"]["lang"] != "un", maybe for semantic only
             tweet["tweet"]["tweet_id"] not in all_tweet_id,
             tweet["user"]["user_id"],
             tweet["user"]["followers_count"] >= 0,
@@ -84,33 +84,30 @@ def start_general_extraction(sample_data_only: bool = True) -> None:
     """
     # Resets output file
     output_file_path: str = os.path.join(
-        current_directory, "data", "cleaned_tweets_combined.json"
+        "data_processed", "cleaned_tweets_combined.json"
     )
     delete_existing_file(output_file_path)
 
     # Extract all tweets from files, append them to the output file
-    json_folder: str = "data" if sample_data_only else "all_data"
+    json_folder: str = "data_test" if sample_data_only else "data_raw"
     path_to_all_json_files: str = os.path.join(current_directory, json_folder)
 
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
-    for file in tqdm(all_raw_json_files, mininterval=1):  # noqa
-        # old backup
-        if file == "all_clean_tweets.json":
-            continue
+    for file in tqdm(all_raw_json_files, bar_format="Processing files: {n_fmt}/{total_fmt} ({percentage:.0f}%) [Elapsed: {elapsed}, Remaining: {remaining}, {rate_fmt}]"):
         tweets_from_file: List[Dict[str, Any]] = read_from_file(
             os.path.join(path_to_all_json_files, file)
         )
         cleaned_tweets_list = []
         for tweet in tweets_from_file:
             if quote := tweet.get("quoted_status"):
-                cleaned_tweets_list.append(start_cleaning(quote, "quote"))
+                cleaned_tweets_list.append(start_cleaning(quote))
             if original_tweet := tweet.get("retweeted_status"):
                 cleaned_tweets_list.extend(
                     (
-                        start_cleaning(original_tweet, "tweet"),
-                        start_cleaning(tweet, "retweet"),
+                        start_cleaning(original_tweet),
+                        start_cleaning(tweet),
                     )
                 )
             else:
-                cleaned_tweets_list.append(start_cleaning(tweet, "tweet"))
+                cleaned_tweets_list.append(start_cleaning(tweet))
         append_to_file(cleaned_tweets_list)  # noqa

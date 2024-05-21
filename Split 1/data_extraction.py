@@ -1,8 +1,9 @@
 import json
 import os
-from typing import List, Dict, Any
-from data_processing import start_cleaning
+from typing import Any, Dict, List
+
 from conversation_threading import start_creating_conversations
+from data_processing import start_cleaning
 
 data_directory: str = r"/data/"
 current_directory: str = os.getcwd()

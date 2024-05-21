@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def look_for_tweet(tweet: Dict[str, Any], list_of_tweets: List[Dict[str, Any]]):

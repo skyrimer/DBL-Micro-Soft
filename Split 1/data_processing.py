@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def delete_nested_key(item: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -125,7 +125,7 @@ def print_readable_dict(item: dict, indent: int = 0) -> None:
             print(" " * indent + f"\033[1m{key}:\033[0m {value}")  # Keys will be bold
 
 
-def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
+def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
     """
     Initializer function for data_processing.py.
     :param dictionary: the original dictionary to process.
@@ -166,6 +166,5 @@ def start_cleaning(dictionary: Dict[str, Any], category: str) -> Dict[str, Any]:
         "replied_count": dictionary.get("replied_count", 0),
         "quoted_status_id": dictionary.get("quoted_status_id"),
         "quote_count": dictionary.get("quote_count", 0),
-        "category": category,
     }
     return clean_dict
