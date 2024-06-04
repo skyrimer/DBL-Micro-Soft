@@ -36,13 +36,32 @@ user, database, password, host = (
 )
 
 # Update the tweets table to have the semantic analysis score
-add_tweet_sentiment_score = """ALTER TABLE Tweets ADD COLUMN sentiment_score FLOAT;"""
+add_tweet_sentiment_score = """ALTER TABLE Conversations ADD COLUMN category FLOAT;"""
 
 
 add_tweet_estimation = """CREATE TABLE IF NOT EXISTS Conversations (
     first_tweet_id VARCHAR(20) NOT NULL,
     last_tweet_id VARCHAR(20) NOT NULL,
     conversation TEXT NOT NULL,
+    category ENUM(
+        "flight delays and cancellations",
+        "booking problems",
+        "check-in troubles",
+        "customer service complaints",
+        "seating and boarding challenges",
+        "in-flight experience",
+        "flight information requests",
+        "refund complaints",
+        "frequent flyer concerns",
+        "safety and security concerns",
+        "special assistance requests",
+        "food and beverage complaints",
+        "overbooking complaints",
+        "technical difficulties",
+        "promotion and offer issues",
+        "lost luggage",
+        "baggage issues"
+    ),
     PRIMARY KEY (first_tweet_id, last_tweet_id)
 );"""
 
@@ -56,3 +75,4 @@ if __name__ == "__main__":
         cursor.execute(add_tweet_sentiment_score)
         cursor.execute(add_tweet_estimation)
         print("End execution")
+        
