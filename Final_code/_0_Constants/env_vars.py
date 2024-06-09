@@ -1,5 +1,6 @@
 import os
 
+# Here is the code for getting environment variables to connect to the database
 
 def check_given_var(env_var_str: str) -> str:
     """
