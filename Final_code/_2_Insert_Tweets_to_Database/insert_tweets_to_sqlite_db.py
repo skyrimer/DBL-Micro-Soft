@@ -2,7 +2,6 @@ import json
 import os
 import sqlite3
 from typing import List, Tuple, Any
-from datetime import datetime
 
 from tqdm.auto import tqdm
 
@@ -107,7 +106,7 @@ def database_fill_sqllite3(database_path: str):
 
 if __name__ == "__main__":
     database_name = "local_backup.db"
-    database_path = os.path.join("../data_processed", database_name)
+    database_path = os.path.join("../Local_Database", database_name)
 
     # Ensure the directory exists
     os.makedirs(os.path.dirname(database_path), exist_ok=True)
