@@ -14,7 +14,7 @@ def could_be_json(string: str) -> bool:
 
 def delete_existing_file(file_path: str) -> None:
     """
-    Deletes the JSON file of the company if it exists.
+    Deletes a file if it exists.
     :param file_path: the path to the file.
     :return: nothing.
     """
@@ -25,9 +25,13 @@ def delete_existing_file(file_path: str) -> None:
 
 def read_from_file(file_name: str) -> List[Dict[str, Any]]:
     """
-    Reads and cleans tweets from a JSON file.
-    :param file_name: the path to the file.
-    :return: the list of tweets (dictionaries) in the file.
+    Reads and processes tweets from a JSON file.
+
+    This function opens the specified JSON file and then checks for each line if it could be a valid
+    JSON object. If it is, the function converts it into a dictionary, and appends it to a list of tweets.
+
+    :param file_name: The path to the JSON file containing tweet data.
+    :return: A list of dictionaries, where each dictionary represents a tweet.
     """
     with open(file_name, "r") as file:
         tweets_in_file: List[Dict[str, Any]] = []
