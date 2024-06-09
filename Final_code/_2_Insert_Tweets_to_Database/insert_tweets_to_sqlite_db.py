@@ -1,13 +1,14 @@
 import json
 import os
 import sqlite3
+from typing import List, Tuple, Any
 
 from tqdm.auto import tqdm
 
 from Final_code._2_Insert_Tweets_to_Database.helper_functions import process_json_object
 
 
-def create_db_sqllite3(file_name) -> None:
+def create_db_sqllite3(file_name: str) -> None:
     connection = sqlite3.connect(file_name)
     cursor = connection.cursor()
 
@@ -44,7 +45,7 @@ def create_db_sqllite3(file_name) -> None:
     cursor.close()
 
 
-def insert_batch_data_sqlite3(cursor, batch_data):
+def insert_batch_data_sqlite3(cursor: sqlite3.Cursor, batch_data: List[Tuple[Tuple[Any, ...], Tuple[Any, ...]]]) -> None:
     """
     Inserts batch data into Users and Tweets tables.
 

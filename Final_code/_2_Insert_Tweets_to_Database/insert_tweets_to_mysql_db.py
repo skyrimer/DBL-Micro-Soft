@@ -1,7 +1,6 @@
-# import mysql.connector
 import json
 import os
-
+from typing import List, Tuple, Any
 import mysql
 from tqdm.auto import tqdm
 
@@ -83,7 +82,7 @@ def create_db(user: str, database: str, password: str, host: str) -> None:
     cursor.close()
 
 
-def insert_batch_data(cursor, batch_data):
+def insert_batch_data(cursor: mysql.connector.cursor.MySQLCursor, batch_data: List[Tuple[Tuple[Any, ...], Tuple[Any, ...]]]) -> None:
     """
     Inserts batch data into Users and Tweets tables.
 
