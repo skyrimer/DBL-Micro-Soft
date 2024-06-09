@@ -45,9 +45,12 @@ def read_from_file(file_name: str) -> List[Dict[str, Any]]:
 
 def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Initializer function for data_processing.py.
-    :param dictionary: the original dictionary to process.
-    :return: the processed dictionary.
+    Cleans and processes a dictionary containing tweet data.
+
+    Extracts and normalizes user and tweet information from the input dictionary.
+
+    :param dictionary: The original dictionary containing tweet data.
+    :return: A cleaned dictionary with processed user and tweet information.
     """
     user = dictionary.get("user", {})
     country_code = "un"
