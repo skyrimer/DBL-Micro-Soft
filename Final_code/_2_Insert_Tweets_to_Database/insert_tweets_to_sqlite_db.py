@@ -6,6 +6,7 @@ from typing import List, Tuple, Any
 from tqdm.auto import tqdm
 
 from Final_code._2_Insert_Tweets_to_Database.helper_functions import process_json_object
+from Final_code._0_Constants.defined_paths import path_processed_tweets_json
 
 
 def create_db_sqllite3(file_name: str) -> None:
@@ -84,7 +85,7 @@ def insert_batch_data_sqlite3(cursor: sqlite3.Cursor, batch_data: List[Tuple[Tup
 def database_fill_sqllite3(database_path: str):
     batch_size = 100_000
     with open(
-        os.path.join("../data_processed", "cleaned_tweets_combined.json"),
+        path_processed_tweets_json,
         "r",
     ) as file:
         connection = sqlite3.connect(database_path)

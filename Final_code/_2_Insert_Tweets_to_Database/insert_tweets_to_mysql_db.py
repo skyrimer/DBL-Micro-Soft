@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 
 from Final_code._0_Constants.env_vars import check_env_vars
 from Final_code._2_Insert_Tweets_to_Database.helper_functions import process_json_object
+from Final_code._0_Constants.defined_paths import path_processed_tweets_json
 
 
 def connect_to_database(
@@ -123,7 +124,7 @@ def database_fill(
 ):
     batch_size = 10_000
     with open(
-        os.path.join("../data_processed", "cleaned_tweets_combined.json"),
+        path_processed_tweets_json,
         "r",
     ) as file:
         connection = connect_to_database(
