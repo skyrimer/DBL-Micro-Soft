@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def process_json_object(dict_):
     """
     Processes a JSON object to extract user and tweet data.
