@@ -16,7 +16,7 @@ def append_to_file(tweets_list: List[Dict[str, Any]]) -> None:
     :return: None.
     """
     output_file_path: str = os.path.join(
-        "data_processed", "cleaned_tweets_combined.json"
+        "../data_processed", "cleaned_tweets_combined.json"
     )
     with open(output_file_path, "a", encoding="utf-8") as file:
         for tweet in tweets_list:
@@ -64,7 +64,7 @@ def start_general_extraction() -> None:
 
     """
     output_file_path: str = os.path.join(
-        "data_processed", "cleaned_tweets_combined.json"
+        "../data_processed", "cleaned_tweets_combined.json"
     )
 
     # Create the output directory if it does not exist
