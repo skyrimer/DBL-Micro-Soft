@@ -64,10 +64,14 @@ def start_general_extraction() -> None:
     The cleaned data will be in the directory of this project, under /data_processed/cleaned_tweets_combined.json.
 
     """
-    # Resets output file
     output_file_path: str = os.path.join(
         "data_processed", "cleaned_tweets_combined.json"
     )
+
+    # Create the output directory if it does not exist
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
+    # Resets output file
     delete_existing_file(output_file_path)
 
     # Extract all tweets from files, append them to the output file
