@@ -2,8 +2,7 @@ import json
 import os
 from typing import Any, Dict, List
 
-from data_extraction import delete_existing_file, read_from_file
-from data_processing import start_cleaning
+from data_extraction_helpers import delete_existing_file, read_from_file, start_cleaning
 from tqdm.auto import tqdm
 
 current_directory: str = os.getcwd()
@@ -75,7 +74,7 @@ def start_general_extraction() -> None:
     delete_existing_file(output_file_path)
 
     # Extract all tweets from files, append them to the output file
-    path_to_all_json_files: str = os.path.join(current_directory, "data_raw")
+    path_to_all_json_files: str = os.path.join(current_directory, "1_Tweet_Data_Extraction/data_raw")
 
     all_raw_json_files: List[str] = os.listdir(path_to_all_json_files)
     for file in tqdm(
