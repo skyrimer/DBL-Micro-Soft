@@ -51,9 +51,18 @@ def valid_tweet(tweet: Dict[str, Any]) -> bool:
 
 def start_general_extraction() -> None:
     """
-    Initializer function for general_data_extraction.py
-    :param sample_data_only: defines which dataset to extract from.
-    :return: nothing.
+    Initializes the tweet extraction and cleaning process.
+
+    This function performs the following tasks:
+    1. Resets the output file where the cleaned tweets will be stored.
+    2. Iterates through all raw JSON tweet files in the specified directory
+    3. Reads tweets from each file, processes them, and cleans them.
+    4. Appends the cleaned tweets to the output file.
+
+    The folder with the json files to be cleaned must be in the same directory as this file, under the name 'data_raw'.
+
+    The cleaned data will be in the directory of this project, under /data_processed/cleaned_tweets_combined.json.
+
     """
     # Resets output file
     output_file_path: str = os.path.join(
