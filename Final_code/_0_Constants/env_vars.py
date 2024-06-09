@@ -1,3 +1,5 @@
+import os
+
 
 def check_given_var(env_var_str: str) -> str:
     """
@@ -13,7 +15,7 @@ def check_given_var(env_var_str: str) -> str:
         AssertionError: If the environment variable is not found.
     """
 
-    env_var = check_env_vars(env_var_str)
+    env_var = os.getenv(env_var_str)
     assert (
         env_var is not None
     ), f"{env_var_str} is required but not found in environment variables"
