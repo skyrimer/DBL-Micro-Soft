@@ -44,6 +44,18 @@ visualizations. To perform them, run EDA_1.ipynb.
 Hint: you can specify whether to fetch the data from mysql or sqlite database by modifying the variable
 'local' in the get_df_from_db function.
 
+### _4_and_following (to be done)
+
+Next steps here must include, in some form:
+
+1. Extracting the conversations
+2. Uploading the conversations to the db (with option to do that both for sqlite and mysql)
+3. Uploading the sentiment for tweets to the db (-||-)
+4. Uploading the categories for conversations to the db (-||-)
+5. Visualizations for Sprint 2
+6. Visualizations for Sprint 3?
+7. Demo?
+
 ## Authors
 
   - **Kirill Chekmenev**
