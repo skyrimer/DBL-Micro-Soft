@@ -83,3 +83,32 @@ COMPANY_NAME_TO_ID = {
 }
 
 COMPANY_ID_TO_NAME = {v: k for k, v in COMPANY_NAME_TO_ID.items()}
+COMPANY_ID_LIST = list(COMPANY_NAME_TO_ID.values())
+COMPANY_NAME_LIST = list(COMPANY_NAME_TO_ID.keys())
+
+QUERY_ALL_2 = """
+SELECT 
+    Users.user_id AS user_id, 
+    Users.creation_time AS user_creation_time, 
+    Tweets.creation_time AS tweet_creation_time,
+    Tweets.tweet_id,
+    Tweets.full_text,
+    Tweets.lang,
+    Tweets.country_code,
+    Tweets.sentiment_score
+FROM Users
+INNER JOIN Tweets ON Users.user_id = Tweets.user_id;
+"""
+
+QUERY_CONVERSATIONS = """
+SELECT * FROM Conversations;
+"""
+
+DTYPES_2 = {
+"user_id": "object",
+"tweet_id": "object",
+"full_text": "object",
+"lang": "category",
+"country_code": "category",
+"sentiment_score": "float32",
+}

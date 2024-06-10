@@ -38,3 +38,5 @@ def get_df_from_db(query_: str, path_: str = '', local = True) -> pd.DataFrame:
         return get_local_data(query_,path_)
     else:
         return fetch_data(query_)
+
+
