@@ -5,19 +5,29 @@ from typing import Any, Dict, List
 
 def could_be_json(string: str) -> bool:
     """
-    Checks if a given string could potentially be a JSON object based on its format.
-    :param string:Input string to check.
-    :return: True if the string could be a JSON object, False otherwise.
+    Checks if a given string could potentially represent a JSON object.
+
+    Args:
+        string (str): The input string to be checked.
+
+    Returns:
+        bool: True if the string could represent a JSON object, False otherwise.
     """
+
     return bool(string.startswith("{") and string.endswith("}"))
 
 
 def delete_existing_file(file_path: str) -> None:
     """
-    Deletes a file if it exists.
-    :param file_path: the path to the file.
-    :return: nothing.
+    Deletes the file at the specified file path if it exists.
+
+    Args:
+        file_path (str): The path to the file to be deleted.
+
+    Returns:
+        None
     """
+
     if os.path.exists(file_path):
         os.remove(file_path)
         print(f"{file_path.split('/')[-1]}' was deleted.")
@@ -25,15 +35,15 @@ def delete_existing_file(file_path: str) -> None:
 
 def read_from_file(file_name: str) -> List[Dict[str, Any]]:
     """
-    Reads and processes tweets from a JSON file.
+    Reads JSON data from a file and returns a list of dictionaries representing the tweets.
 
-    This function opens the specified JSON file and then checks for each line if it could be a valid
-    JSON object. If it is, the function converts it into a dictionary, and appends it to a list of tweets.
+    Args:
+        file_name (str): The name of the file to read JSON data from.
 
-    :param file_name: The path to the JSON file containing tweet data.
-    :return: A list of dictionaries, where each dictionary represents a tweet.
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries representing the tweets read from the file.
     """
-    with open(file_name, "r") as file:
+    with open(file_name, "r", encoding="utf-8") as file:
         tweets_in_file: List[Dict[str, Any]] = []
         for line in file:
             line: str = line.strip().removesuffix(",")
@@ -43,21 +53,25 @@ def read_from_file(file_name: str) -> List[Dict[str, Any]]:
                 tweets_in_file.append(tweet)
         return tweets_in_file
 
-def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Cleans and processes a dictionary containing tweet data.
 
-    Extracts and normalizes user and tweet information from the input dictionary.
-
-    :param dictionary: The original dictionary containing tweet data.
-    :return: A cleaned dictionary with processed user and tweet information.
+def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """
-    user = dictionary.get("user", {})
-    country_code = "un"
+    Cleans and structures a dictionary representing user and tweet data.
+
+    Args:
+        dictionary (Dict[str, Any]): The dictionary containing user and tweet data.
+
+    Returns:
+        Dict[str, Dict[str, Any]]: A cleaned and structured dictionary
+            with user and tweet dictionaries inside.
+    """
+
+    user: Dict[str, Any] = dictionary.get("user", {})
+    country_code: str = "un"
     if place := dictionary.get("place"):
-        country_code = place.get("country_code")
+        country_code: str = place.get("country_code")
 
-    clean_dict = {
+    clean_dict: Dict[str, Dict[str, Any]] = {
         "user": {
             "user_id": user.get("id_str"),
             "verified": user.get("verified", False),
@@ -70,9 +84,9 @@ def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
         }
     }
     if extended_tweet := dictionary.get("extended_tweet"):
-        text = extended_tweet.get("full_text", dictionary.get("text", ""))
+        text: str = extended_tweet.get("full_text", dictionary.get("text", ""))
     else:
-        text = dictionary.get("text", "")
+        text: str = dictionary.get("text", "")
     clean_dict["tweet"] = {
         "tweet_id": dictionary.get("id_str"),
         "text": text,
@@ -89,4 +103,3 @@ def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Any]:
         "quote_count": dictionary.get("quote_count", 0),
     }
     return clean_dict
-

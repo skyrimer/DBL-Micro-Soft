@@ -1,14 +1,15 @@
 from datetime import datetime
+from typing import Dict, Any
 
-def process_json_object(dict_):
+def process_json_object(dict_: Dict[str, Dict[str, Any]]) -> tuple[tuple[Any]]:
     """
-    Processes a JSON object to extract user and tweet data.
-
+    Processes a dictionary containing user and tweet data and extracts relevant information for database insertion.
+    
     Args:
-        dict_: Dictionary representing a JSON object containing user and tweet information.
-
+        dict_ (Dict[str, Dict[str, Any]]): The dictionary containing user and tweet data.
+    
     Returns:
-        Tuple containing user data and tweet data extracted from the JSON object.
+        tuple[tuple[Any]]: A tuple of tuples containing processed user and tweet data for database insertion.
     """
 
     user = dict_["user"]
