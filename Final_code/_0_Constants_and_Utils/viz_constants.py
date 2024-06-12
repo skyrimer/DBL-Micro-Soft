@@ -1,6 +1,9 @@
+from typing import Dict
+
 # This is a file with constants used for visualizations
 
-QUERY_REPLY = """
+# SQL Queries
+QUERY_REPLY: str = """
 SELECT 
     t1.tweet_id AS tweet_id,
     t1.creation_time AS tweet_creation_time,
@@ -15,14 +18,14 @@ INNER JOIN
 ON 
     t1.replied_tweet_id = t2.tweet_id;
 """
-# Queries
-QUERY_TWEETS = "SELECT * from Tweets"
-QUERY_USERS = "SELECT * from Users"
-QUERY_CONVERSATIONS = "SELECT * from Conversations"
-QUERY_CONVERSATIONS_CATEGORY = "SELECT * from ConversationsCategory"
+
+QUERY_TWEETS: str = "SELECT * from Tweets"
+QUERY_USERS: str = "SELECT * from Users"
+QUERY_CONVERSATIONS: str = "SELECT * from Conversations"
+QUERY_CONVERSATIONS_CATEGORY: str = "SELECT * from ConversationsCategory"
 
 # Optimal dtypes
-DTYPES_TWEETS = {
+DTYPES_TWEETS: Dict[str, str] = {
     "creation_time": "datetime64[ns]",
     "tweet_id": "object",
     "full_text": "object",
@@ -36,7 +39,8 @@ DTYPES_TWEETS = {
     "quoted_status_id": "object",
     "quote_count": "int32",
 }
-DTYPES_USERS = {
+
+DTYPES_USERS: Dict[str, str] = {
     "user_id": "object",
     "creation_time": "datetime64[ns]",
     "verified": "bool",
@@ -46,19 +50,21 @@ DTYPES_USERS = {
     "default_profile": "bool",
     "default_profile_image": "bool",
 }
-DTYPES_CONVERSATIONS = {
+
+DTYPES_CONVERSATIONS: Dict[str, str] = {
     "conversation_id": "int32",
     "tweet_order": "int16",
     "tweet_id": "object",
 }
-DTYPES_CONVERSATIONS_CATEGORY = {
+
+DTYPES_CONVERSATIONS_CATEGORY: Dict[str, str] = {
     "conversation_id": "int32",
     "category": "category",
-    "confidence": "float8",
+    "confidence": "float16",
 }
 
 # Airline specific info
-COMPANY_NAME_TO_ID = {
+COMPANY_NAME_TO_ID: Dict[str, str] = {
     "Klm": "56377143",
     "Air France": "106062176",
     "British Airways": "18332190",
@@ -74,4 +80,4 @@ COMPANY_NAME_TO_ID = {
     "Virgin Atlantic": "20626359",
 }
 
-COMPANY_ID_TO_NAME = {v: k for k, v in COMPANY_NAME_TO_ID.items()}
+COMPANY_ID_TO_NAME: Dict[str, str] = {v: k for k, v in COMPANY_NAME_TO_ID.items()}

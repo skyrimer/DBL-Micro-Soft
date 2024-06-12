@@ -1,11 +1,14 @@
+from typing import Union
+
 import numpy as np
 import pycountry
+
 # This is a file with helper functions used for visualizations
 
 
 def get_country_name(country_code: str, default: str = "Unknown Country") -> str:
     """
-    Convert a two-letter country code (ISO 3166-1 alpha-2|) to its full country name.
+    Convert a two-letter country code (ISO 3166-1 alpha-2) to its full country name.
 
     Parameters:
     country_code (str): The two-letter ISO 3166-1 alpha-2 country code.
@@ -39,7 +42,16 @@ def get_full_language_name(
     return language
 
 
-def get_size_of(size_bytes: float | int) -> str:
+def get_size_of(size_bytes: Union[float, int]) -> str:
+    """
+    Convert a size in bytes to a human-readable string with appropriate units.
+
+    Parameters:
+    size_bytes (Union[float, int]): The size in bytes.
+
+    Returns:
+    str: A human-readable string representing the size in appropriate units.
+    """
     if size_bytes == 0:
         return "0B"
     size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
