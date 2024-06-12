@@ -13,7 +13,6 @@ def could_be_json(string: str) -> bool:
     Returns:
         bool: True if the string could represent a JSON object, False otherwise.
     """
-
     return bool(string.startswith("{") and string.endswith("}"))
 
 
@@ -27,7 +26,6 @@ def delete_existing_file(file_path: str) -> None:
     Returns:
         None
     """
-
     if os.path.exists(file_path):
         os.remove(file_path)
         print(f"{file_path.split('/')[-1]}' was deleted.")
@@ -65,11 +63,10 @@ def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         Dict[str, Dict[str, Any]]: A cleaned and structured dictionary
             with user and tweet dictionaries inside.
     """
-
     user: Dict[str, Any] = dictionary.get("user", {})
     country_code: str = "un"
     if place := dictionary.get("place"):
-        country_code: str = place.get("country_code")
+        country_code = place.get("country_code")
 
     clean_dict: Dict[str, Dict[str, Any]] = {
         "user": {
@@ -83,10 +80,13 @@ def start_cleaning(dictionary: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
             "default_profile_image": int(user.get("default_profile_image", True)),
         }
     }
+
+    text: str = ""
     if extended_tweet := dictionary.get("extended_tweet"):
-        text: str = extended_tweet.get("full_text", dictionary.get("text", ""))
+        text = extended_tweet.get("full_text", dictionary.get("text", ""))
     else:
-        text: str = dictionary.get("text", "")
+        text = dictionary.get("text", "")
+
     clean_dict["tweet"] = {
         "tweet_id": dictionary.get("id_str"),
         "text": text,
