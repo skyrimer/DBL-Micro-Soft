@@ -1,0 +1,3 @@
+{
+  "python.analysis.extraPaths": ["./Final_code/_0_Constants_and_Utils"]
+}
