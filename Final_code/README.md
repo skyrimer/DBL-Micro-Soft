@@ -10,7 +10,7 @@ for notes on deploying the project on a live system.
 
 ### Environment Setup
 ## Python version
-Note: this installation guide explains how to get the python version that we were working with, which is python 3.12.5. However, for the semantic analysis part in order to significantly increase the runtime performance for such heavy operation, we used an external website [Kaggle][https://www.kaggle.com], which has the necessary version of python (<3.11) and GPU drivers in order to use GPU acceleration. Thus, the following guide will still work, yet if you are not planning to use GPU acceleration when getting sentiment scores for tweets.
+Note: this installation guide explains how to get the python version that we were working with, which is python 3.12.3. However, for the semantic analysis part in order to significantly increase the runtime performance for such heavy operation, we used an external website [Kaggle][https://www.kaggle.com], which has the necessary version of python (<3.11) and GPU drivers in order to use GPU acceleration. Thus, the following guide will still work, yet if you are not planning to use GPU acceleration when getting sentiment scores for tweets.
 ### Windows
 
 1. **Download Python Installer:**
@@ -32,7 +32,7 @@ Note: this installation guide explains how to get the python version that we wer
      ```console
      python --version
      ```
-   - You should see `Python 3.12.5`.
+   - You should see `Python 3.12.3`.
 
 ## macOS
 
@@ -49,7 +49,7 @@ Note: this installation guide explains how to get the python version that we wer
      ```console
      python3 --version
      ```
-   - You should see `Python 3.12.5`.
+   - You should see `Python 3.12.3`.
 
 ### Linux
 
@@ -71,7 +71,7 @@ Note: this installation guide explains how to get the python version that we wer
      ```console
      python3.12 --version
      ```
-   - You should see `Python 3.12.5`.
+   - You should see `Python 3.12.3`.
 
 ### Verify Installation and Set Up Environment
 
@@ -153,7 +153,7 @@ Now that we have the tweets in form of JSON only with the fields that interest u
 insert_to_db.py file (remember to set up environment variables as stated at the top of this document!!). Before executing the script, you must check 3 parameters:
 - `local` - whether the Sqlite or MySQL should be filled with data
 - `reset` -  whether you want to fully reset the database before insertion
-- `bach_size` - how many rows of data will be uploaded at the same time. Bigger batches increase the running time, but require more memory.
+- `batch_size` - how many rows of data will be uploaded at the same time. Bigger batches increase the running time, but require more memory.
 
 After the file successfully executes, the file can be found under `data_processed\local_backup.db`.
 
