@@ -8,13 +8,11 @@ These instructions will give you a copy of the project up and running on
 your local machine for development and testing purposes. See deployment
 for notes on deploying the project on a live system.
 
-### Environment Setup
 ## Python version
-Note: this installation guide explains how to get the python version that we were working with, which is python 3.12.3. However, for the semantic analysis part in order to significantly increase the runtime performance for such heavy operation, we used an external website [Kaggle][https://www.kaggle.com], which has the necessary version of python (<3.11) and GPU drivers in order to use GPU acceleration. Thus, the following guide will still work, yet if you are not planning to use GPU acceleration when getting sentiment scores for tweets.
 ### Windows
 
 1. **Download Python Installer:**
-   - Go to the [official Python download page](https://www.python.org/downloads/release/python-3125/).
+   - Go to the [official Python download page](https://www.python.org/downloads/).
    - Click on "Windows installer (64-bit)" to download the executable installer.
 
 2. **Run the Installer:**
@@ -34,10 +32,10 @@ Note: this installation guide explains how to get the python version that we wer
      ```
    - You should see `Python 3.12.3`.
 
-## macOS
+### macOS
 
 1. **Download Python Installer:**
-   - Go to the [official Python download page](https://www.python.org/downloads/release/python-3125/).
+   - Go to the [official Python download page](https://www.python.org/downloads/).
    - Click on "macOS 64-bit installer" to download the .pkg file.
 
 2. **Run the Installer:**
@@ -51,7 +49,7 @@ Note: this installation guide explains how to get the python version that we wer
      ```
    - You should see `Python 3.12.3`.
 
-### Linux
+#### Linux
 
 1. **Add Deadsnakes PPA (For Ubuntu/Debian-based systems):**
    - Open Terminal and add the Deadsnakes PPA:
@@ -108,6 +106,8 @@ To be able to create a remote MySQL database using the code, you must set the fo
 
 The code gets the variables using `check_env_vars()` function defined in `_0_Constants\\env_vars.py`. Thus, if security concerns is not and issue, check_env_vars() can be modified to explicitly return the values.
 
+If you are not planning to use MySQL and will be working with local SQLite3 database then you don't need to set the environment variables. 
+
 ## How to run 
 1. Clone the repository:
 ```console
@@ -139,12 +139,12 @@ python folder/python_module.py
 , where you should change `folder/python_module.py` to the path to the module that you want to run. 
 ### _0_Constants
 
-This folder contains constants and utility functions used throughout the project.
+This folder contains constants and utility functions used throughout the project. All the functions were tested before, but you need to modify anything like the database utilities or predefined paths, then all the functions and constants can be found in modules in this folder. All of the functions have docstring documentation, so it should be clear what are the doing and how to use them.
 
 ### _1_Tweet_Data_Extraction
 
 Given a folder with JSONs containing tweets, our first aim was to clean them.
-In order to clean the data, the folder with raw JSONs must be put in the main directory of the project (next to folders `Split N`, `Final_code` and etc), under the name 'data_raw'. Then one must run the file data_extraction.py.
+In order to clean the data, the folder with raw JSONs must be put in the main directory of the project (next to folders `Split N`, `Final_code` and etc), under the name `data_raw`. Then one must run the file `data_extraction.py`.
 The result will be one JSON file in this directory, under `data_processed/cleaned_tweets_combined.json`.
 
 ### _2_Insert_Tweets_to_Database
@@ -155,24 +155,46 @@ insert_to_db.py file (remember to set up environment variables as stated at the 
 - `reset` -  whether you want to fully reset the database before insertion
 - `batch_size` - how many rows of data will be uploaded at the same time. Bigger batches increase the running time, but require more memory.
 
-After the file successfully executes, the file can be found under `data_processed\local_backup.db`.
+After the file successfully executes, MySQL database will be updated with `Tweets` and `Users` information (If `local` was set to `True`, then the database can be found under `data_processed\local_backup.db`).
 
 ### _3_Visualizations_Sprint_1
 
-After having uploaded the data to a database, we move on to the first part that can provide us with real insights through simple visualizations. To perform them, run EDA_1.ipynb. In order to switch between the local and server version of the database, change variable `local` in the first cell of "Loading" section.
+After having uploaded the data to a database, we move on to the first part that can provide us with real insights through simple visualizations. To perform them, run `EDA_1.ipynb`. In order to switch between the local and server version of the database, change variable `local` in the first cell of "Loading" section.
 
-### _4_and_following (to be done)
+### _4_Conversations
 
-Next steps here must include, in some form:
+This folder features the conversation extraction algorithm as well as its upload to the database. In order to identify all the conversations and upload them to database under `Conversations` table, you need to run `conversation_extraction.ipynb`.
+As usual, `local` variable in the first cell of "Local" section switches between the local and server versions of the database. `batch_size` in the last cell defines how many rows of data will be uploaded at the same time.
 
-1. Extracting the conversations
-2. Uploading the conversations to the db (with option to do that both for sqlite and mysql)
-3. Uploading the sentiment for tweets to the db (-||-)
-4. Uploading the categories for conversations to the db (-||-)
-5. Visualizations for Sprint 2
-6. Visualizations for Sprint 3?
-7. Demo?
+### _5_Sentiment_Score
 
+This folder features the sentiment scores utilities and upload of tweets sentiment scores to the database.
+- `sentiment_scores.ipynb` is the file that gets and uploads the sentiment scores to the database. `local` and `batch_size` variables have the same meaning as in files before.
+- `sentiment_accuracy.ipynb` is the file that contains evaluation of the deep learning model accuracy. The way it is done, is by comparing the labels to the pre labelled dataset that found [here][the link should go here??????????????????].  
+
+#### Notes on running the sentiment scores
+This installation guide explains how to get the python version that we were working with, which is python `3.12.3`. However, for the semantic analysis part in order to significantly increase the runtime performance for such heavy operation, we used an external website [Kaggle][https://www.kaggle.com], which has the necessary version of python (<3.11) and GPU drivers with necessary drivers in order to use GPU acceleration. Thus, the following guide will still work, yet getting sentiment scores will take a while (roughly 93 hours depending on machine specs to get all sentiment scores).
+If you planning to use GPU acceleration when getting sentiment scores for tweets, then you need to do the following:
+1. Create an account on [Kaggle][https://www.kaggle.com]
+2. Verify the account using the phone number
+3. Create a new notebook and import the `sentiment_scores.ipynb` module as well as the functions and constants used in it (namely `clean_mentions, get_batches, apply_sentiment_analysis, convert_to_list, update_sentiment_scores` from `sentiment_utils.py` and `get_dataframe_from_query, form_connection_params` from `_0_Constants\database_utils.py`)
+4 Adjust the behaviour of `form_connection_params`:
+4.1. If you're planning to use MySQL server, then explicitly state the connection parameters or use environment variables ([guide how to use environment variables on Kaggle][https://www.kaggle.com/code/jamesmcguigan/kaggle-environment-variables-os-environ])
+4.2. If you're planning to use SQLite, then you need to upload your local database as the dataset, copy the database into working directory using `!cp "/kaggle/input/{database_path}" kaggle/working/`, and then adjust the paths in the paths accordingly.
+5. Change the session options to use GPU accelerator (, and persistence to "Files only" if you're using the local version)
+6. Run the script either manually or click "Save version" and let it run on the server (it runs for 12 hours or until it is done). If you're using the local version, then you can download the updated database from the working folder.
+
+### _6_Categorisation
+
+This folder contains retrieving topics of the conversations, for which you need to run `category_upload.ipynb` file. In order to train the model, you need to put your manually labelled dataset as `translated_and_categorized_cleaned.xlsx` in the same folder. Otherwise, the model does not work. `local` and `batch_size` variables have the same meaning as in files before.
+
+### _7_Visualizations_Sprint_2
+
+This folder contains all the visualisations that were used to get intermediate results of sentiment analysis and business idea. Some of the graphs were just used to provide additional insights and are not directly related to anything. To perform them, run `EDA_2.ipynb`. In order to switch between the local and server version of the database, change variable `local` in the first cell of "Loading" section.
+
+### _8_PerformanceEvaluation 
+
+This folder contains the final visualisations used for evaluating the performance of the 
 ## Authors
 
   - **Kirill Chekmenev**
