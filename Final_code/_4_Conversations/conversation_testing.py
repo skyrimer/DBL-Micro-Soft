@@ -1,6 +1,12 @@
 import pandas as pd
 from conversation_algorithm import extract_conversations
 
+
+
+def contains_company_ids(conversation, df, company_ids):
+    users_in_conversation = set(df.loc[conversation, 'user_id'])
+    return any(user in users_in_conversation for user in company_ids)
+
 test_cases = [
     {
         "name": "1. Simple Conversation Between User and Airline",
@@ -16,6 +22,7 @@ test_cases = [
             ],
         },
         "expected": [["1", "2", "3", "4"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "2. User-Initiated Conversation",
@@ -30,6 +37,7 @@ test_cases = [
             ],
         },
         "expected": [["1", "2", "3"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "3. More Than Two Users Involved",
@@ -45,6 +53,7 @@ test_cases = [
             ],
         },
         "expected": [["1", "2"], ["2", "3", "4"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "4. Conversation Branches Out",
@@ -60,7 +69,8 @@ test_cases = [
                 "2023-05-01T13:20:00Z",
             ],
         },
-        "expected": [["2", "5"], ["1", "2", "3", "4"]],
+        "expected": [["1", "2", "3", "4"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "5. Non-Reply Initial Tweet by Airline",
@@ -71,6 +81,7 @@ test_cases = [
             "tweet_creation_time": ["2023-05-01T14:00:00Z", "2023-05-01T14:05:00Z"],
         },
         "expected": [["1", "2"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "6. Non-Reply Initial Tweet by User",
@@ -81,6 +92,7 @@ test_cases = [
             "tweet_creation_time": ["2023-05-01T15:00:00Z", "2023-05-01T15:05:00Z"],
         },
         "expected": [["1", "2"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "8. Same User Replies to Themselves",
@@ -95,6 +107,7 @@ test_cases = [
             ],
         },
         "expected": [],
+        "company_ids": ["airline"]
     },
     {
         "name": "9. Mixed Order of Tweets",
@@ -109,6 +122,7 @@ test_cases = [
             ],
         },
         "expected": [["3", "1", "2"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "10. Multiple Independent Conversations",
@@ -126,6 +140,7 @@ test_cases = [
             ],
         },
         "expected": [["1", "2"], ["3", "4"], ["5", "6"]],
+        "company_ids": ["airline"]
     },
     {
         "name": "11. Nested Replies",
@@ -141,18 +156,28 @@ test_cases = [
             ],
         },
         "expected": [["1", "2", "3", "4"]],
+        "company_ids": ["airline"]
     },
 ]
 
-
 for test_case in test_cases:
+    print(F"Starting: {test_case['name']}")
     df = pd.DataFrame(test_case["data"]).set_index("tweet_id")
     df["tweet_creation_time"] = pd.to_datetime(df["tweet_creation_time"])
     df = df.sort_values("tweet_creation_time", ascending=False)
-    result = extract_conversations(df, test_case["data"]["user_id"])
+    print("Input table:")
+    print(df[["user_id"]])
+    result, users = extract_conversations(df, test_case["company_ids"])
     assert sorted(result) == sorted(
         test_case["expected"]
     ), f"'{test_case['name']}' failed: expected {test_case['expected']}, got {result}"
+    
+    # Additional check for company ID presence
+    for conversation in result:
+        assert contains_company_ids(conversation, df, test_case["company_ids"]), \
+            f"'{test_case['name']}' failed: conversation {conversation} does not contain any company IDs"
+    print(f"'{test_case['name']}' passed company ID check.")
     print(f"'{test_case['name']}' passed.")
     print()
+
 print("All tests passed!")

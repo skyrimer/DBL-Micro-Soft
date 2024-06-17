@@ -1,3 +1,22 @@
+categories = [
+    "Baggage and Luggage",
+    "Booking",
+    "Check-in",
+    "Customer Service and Special Assistance",
+    "Delays and Cancellations",
+    "Flight Information Requests",
+    "Food and Beverages",
+    "Frequent Flyer",
+    "In-Flight Experience",
+    "Promotions and Offers",
+    "Refunds and Transactions",
+    "Safety and Security",
+    "Seating and Boarding experience",
+    "Technical Difficulties",
+    "Undefined category",
+]
+formatted_categories = ", ".join(f"'{category}'" for category in categories)
+
 # SQLite
 CREATE_USERS_SQLITE: str = """ 
 CREATE TABLE IF NOT EXISTS Users(
@@ -41,30 +60,12 @@ CREATE TABLE IF NOT EXISTS Conversations (
     FOREIGN KEY (tweet_id) REFERENCES Tweets(tweet_id)
 );
 """
+# Format the list into a properly quoted string for SQL
 
-CREATE_CONVERSATIONS_CATEGORY_SQLITE: str = """
+CREATE_CONVERSATIONS_CATEGORY_SQLITE: str = f"""
 CREATE TABLE IF NOT EXISTS ConversationsCategory (
     conversation_id INTEGER PRIMARY KEY,
-    category TEXT NOT NULL CHECK(category IN (
-        'flight delays and cancellations', 
-        'booking problems', 
-        'check-in troubles', 
-        'customer service complaints', 
-        'seating and boarding challenges', 
-        'in-flight experience', 
-        'flight information requests', 
-        'refund complaints', 
-        'frequent flyer concerns', 
-        'safety and security concerns', 
-        'special assistance requests', 
-        'food and beverage complaints', 
-        'overbooking complaints', 
-        'technical difficulties', 
-        'promotion and offer issues', 
-        'lost luggage', 
-        'baggage issues',
-        'No Category'
-    )),
+    category TEXT NOT NULL CHECK(category IN ({formatted_categories})),
     FOREIGN KEY (conversation_id) REFERENCES Conversations(conversation_id)
 );
 """
@@ -114,29 +115,10 @@ CREATE TABLE IF NOT EXISTS Conversations (
 );
 """
 
-CREATE_CONVERSATIONS_CATEGORY_MYSQL: str = """
+CREATE_CONVERSATIONS_CATEGORY_MYSQL: str = f"""
 CREATE TABLE IF NOT EXISTS ConversationsCategory (
     conversation_id MEDIUMINT UNSIGNED PRIMARY KEY,
-    category ENUM(
-        'flight delays and cancellations', 
-        'booking problems', 
-        'check-in troubles', 
-        'customer service complaints', 
-        'seating and boarding challenges', 
-        'in-flight experience', 
-        'flight information requests', 
-        'refund complaints', 
-        'frequent flyer concerns', 
-        'safety and security concerns', 
-        'special assistance requests', 
-        'food and beverage complaints', 
-        'overbooking complaints', 
-        'technical difficulties', 
-        'promotion and offer issues', 
-        'lost luggage', 
-        'baggage issues',
-        'No Category'
-    ) NOT NULL,
+    category ENUM({", ".join(categories)}) NOT NULL,
     FOREIGN KEY (conversation_id) REFERENCES Conversations(conversation_id)
 );
 """

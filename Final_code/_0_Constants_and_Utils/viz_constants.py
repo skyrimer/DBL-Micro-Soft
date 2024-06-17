@@ -60,7 +60,6 @@ DTYPES_CONVERSATIONS: Dict[str, str] = {
 DTYPES_CONVERSATIONS_CATEGORY: Dict[str, str] = {
     "conversation_id": "int32",
     "category": "category",
-    "confidence": "float16",
 }
 
 # Airline specific info

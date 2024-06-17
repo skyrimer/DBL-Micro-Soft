@@ -2,6 +2,7 @@ import contextlib
 import gc
 import os
 import re
+import string
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Tuple
@@ -49,7 +50,9 @@ def process_batch(texts):
     This function uses a pre-trained transformer model for sequence classification to analyze the sentiment of the texts in the given batch. It returns a list of ranked sentiment labels for the input texts, where the first label is the most likely sentiment and the subsequent labels are less likely sentiments.
     """
     # Get the maximum sequence length for the model
-    encoded_input = tokenizer(texts, return_tensors="tf", padding=True, truncation=True, max_length=512)
+    encoded_input = tokenizer(
+        texts, return_tensors="tf", padding=True, truncation=True, max_length=512
+    )
     with tf.device(device):
         output = model(encoded_input)
 
@@ -99,20 +102,25 @@ def apply_sentiment_analysis(
     return df
 
 
-def clean_mentions(text):
-    # Regex pattern to find mentions
-    mention_pattern = r"@([A-Za-z0-9_]+)"
-    # Regex pattern to find URLs
-    url_pattern = r"https?://\S+|www\.\S+"
-    rt_pattern = r"^RT\s+"
-
-    # Substitute mentions with an empty string
-    text = re.sub(mention_pattern, "", text)
-    # Substitute URLs with an empty string
-    text = re.sub(url_pattern, "", text)
-    text = re.sub(rt_pattern, "", text)
-
-    return text.strip()
+def clean_mentions(tweet):
+    # Remove RT since it has no meaning
+    tweet = re.sub(r"^RT ", "", tweet)
+    # Remove URLs since they should not impact anything
+    tweet = re.sub(r"http\S+|www\S+|https\S+", "", tweet)
+    # Remove user mentions
+    tweet = re.sub(r"@\w+", "", tweet)
+    # Remove hashtag symbols but keep the words
+    tweet = re.sub(r"#", "", tweet)
+    # Remove unnecessary punctuation while keeping emoticons and important punctuation
+    tweet = tweet.translate(
+        str.maketrans(
+            "",
+            "",
+            string.punctuation.replace("!", "").replace("?", "").replace("#", ""),
+        )
+    )
+    # Strip unnecessary whitespace
+    return tweet.strip()
 
 
 def update_sentiment_scores(

@@ -186,7 +186,7 @@ If you planning to use GPU acceleration when getting sentiment scores for tweets
 
 ### _6_Categorisation
 
-This folder contains retrieving topics of the conversations, for which you need to run `category_upload.ipynb` file. In order to train the model, you need to put your manually labelled dataset as `translated_and_categorized_cleaned.xlsx` in the same folder. Otherwise, the model does not work. `local` and `batch_size` variables have the same meaning as in files before.
+This folder contains retrieving topics of the conversations, for which you need to run `category_upload.ipynb` file. In order to train the model, you need to put your manually labelled dataset as `topics_labelled.xlsx` in the same folder. Otherwise, the model does not work. `local` and `batch_size` variables have the same meaning as in files before.
 
 ### _7_Visualizations_Sprint_2
 

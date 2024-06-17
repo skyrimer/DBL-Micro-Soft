@@ -102,8 +102,8 @@ def database_fill(
 
 
 if __name__ == "__main__":
-    local: bool = False
-    reset: bool = True
+    local: bool = True
+    reset: bool = False
     batch_size: int = 100_000
     connection_params: Dict[str, Any] = form_connection_params(local)
     if reset:

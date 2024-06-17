@@ -84,13 +84,14 @@ def trace_conversation(start_tweet_id: str, tweet_dict: dict):
     ):
         tweet_info = tweet_dict[current_tweet_id]
         convo.append(current_tweet_id)
-        users_in_conversation.add(tweet_info["user_id"])
         local_processed_tweet_ids.add(current_tweet_id)
+        users_in_conversation.add(tweet_info["user_id"])
         if len(users_in_conversation) > 2:
+            users_in_conversation.remove(tweet_info["user_id"])
             return (
                 convo[:-1][::-1],
                 users_in_conversation,
-            )  # As soon as the third user appears, we delete his tweet and return
+            )
         current_tweet_id = tweet_info["replied_tweet_id"]
     return (
         (convo[::-1], users_in_conversation)
@@ -114,12 +115,13 @@ def extract_conversations(df: pd.DataFrame, user_ids: list):
     df.index = df.index.astype(str)
     tweet_dict = df.to_dict("index")
     conversations = []
+    user_involved = []
     trie = Trie()  # Initialize trie for subset checks
     user_ids_set = set(user_ids)  # Convert list to set for faster membership checking
 
     # Start tracing conversations from tweets that are replies
     for tweet_id in tqdm(
-        df[df["replied_tweet_id"].notnull()].index, desc="Extracting all conversations"
+        df[df["replied_tweet_id"].notnull()].index, desc="Extracting conversations: "
     ):
         conversation, users_in_conversation = trace_conversation(tweet_id, tweet_dict)
         if (
@@ -129,5 +131,6 @@ def extract_conversations(df: pd.DataFrame, user_ids: list):
         ):
             trie.insert(conversation)
             conversations.append(conversation)
+            user_involved.append(users_in_conversation)
 
     return conversations
