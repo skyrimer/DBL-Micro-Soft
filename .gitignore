@@ -168,3 +168,6 @@ cython_debug/
 all_clean_tweets.json
 cleaned_tweets_combined.json
 aviation.db
+label_encoder.joblib
+svm_model.joblib
+tfidf_vectorizer.joblib
