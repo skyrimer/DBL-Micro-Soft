@@ -16,7 +16,10 @@ def get_country_name(country_code: str, default: str = "Unknown Country") -> str
     Returns:
     str: The full name of the country or a message indicating the code was not found.
     """
-    country = pycountry.countries.get(alpha_2=country_code, default=default)
+    try:
+        country = pycountry.countries.get(alpha_2=country_code, default=default)
+    except LookupError:
+        return default
     if country != default:
         country = country.name
     return country
