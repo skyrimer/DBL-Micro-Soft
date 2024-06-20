@@ -170,7 +170,7 @@ As usual, `local` variable in the first cell of "Local" section switches between
 
 This folder features the sentiment scores utilities and upload of tweets sentiment scores to the database.
 - `sentiment_scores.ipynb` is the file that gets and uploads the sentiment scores to the database. `local` and `batch_size` variables have the same meaning as in files before.
-- `sentiment_accuracy.ipynb` is the file that contains evaluation of the deep learning model accuracy. The way it is done, is by comparing the labels to the pre labelled dataset that found [here][the link should go here??????????????????].  
+- `sentiment_accuracy.ipynb` is the file that contains evaluation of the deep learning model accuracy. The way it is done, is by comparing the labels to the pre labelled dataset that found [here][https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment].  
 
 #### Notes on running the sentiment scores
 This installation guide explains how to get the python version that we were working with, which is python `3.12.3`. However, for the semantic analysis part in order to significantly increase the runtime performance for such heavy operation, we used an external website [Kaggle][https://www.kaggle.com], which has the necessary version of python (<3.11) and GPU drivers with necessary drivers in order to use GPU acceleration. Thus, the following guide will still work, yet getting sentiment scores will take a while (roughly 93 hours depending on machine specs to get all sentiment scores).
@@ -184,9 +184,13 @@ If you planning to use GPU acceleration when getting sentiment scores for tweets
 5. Change the session options to use GPU accelerator (, and persistence to "Files only" if you're using the local version)
 6. Run the script either manually or click "Save version" and let it run on the server (it runs for 12 hours or until it is done). If you're using the local version, then you can download the updated database from the working folder.
 
+An example code could be found under `kaggle_local.ipynb`
 ### _6_Categorisation
 
-This folder contains retrieving topics of the conversations, for which you need to run `category_upload.ipynb` file. In order to train the model, you need to put your manually labelled dataset as `topics_labelled.xlsx` in the same folder. Otherwise, the model does not work. `local` and `batch_size` variables have the same meaning as in files before.
+This folder contains retrieving topics of the conversations and conversations that should have been started, which should be ran in the following order:
+- `category_train.ipynb` - trains the SVM model on the dataset. The one that we've collected is under `clean_labels.xlsx` but you can you which ever one you like.
+- `category_upload.ipynb` - extracts all the categories and uploads it to the database. `local` and `batch_size` variables have the same meaning as in files before.
+- `NonResponses.ipynb` - extracts all the non-responses by Lufthansa and saves them into folders for Performance Evaluation and the Demo.
 
 ### _7_Visualizations_Sprint_2
 
@@ -194,7 +198,12 @@ This folder contains all the visualisations that were used to get intermediate r
 
 ### _8_PerformanceEvaluation 
 
-This folder contains the final visualisations used for evaluating the performance of the 
+This folder contains all the final visualisations that were considered for the poster. A big part of it was just exploration of what we have collected, thus a lot of graphs might be not as neat as they should be for the presentation. To perform them, run `summarisation.ipynb`. In order to switch between the local and server version of the database, change variable `local` in the first cell of "Loading" section.
+
+### _9_PerformanceEvaluation 
+
+This folder contains the demo code that generates the graphs and statistics for the poster. To perform them, run `demo.ipynb`. In order to switch between the local and server version of the database, change variable `local` in the first cell of "Loading" section. If you want to adjust the time spans then change `start_time` and `end_time` in the format of `yyyy-mm-dd`.
+
 ## Authors
 
   - **Kirill Chekmenev**
