@@ -156,7 +156,7 @@ The result will be one JSON file in this directory, under `data_processed/cleane
 Now that we have the tweets in form of JSON only with the fields that interest us, the next step is to insert them into an SQL database. We decided to use a MySQL database (and Sqlite3 as the backup database in case something happens to the server), it can be created by running the
 insert_to_db.py file (remember to set up environment variables as stated at the top of this document!!). Before executing the script, you must check 3 parameters:
 - `local` - whether the Sqlite or MySQL should be filled with data (set to True if you want to use the local version Sqlite3, and False if you want to use external server MYSQL)
-- `reset` -  whether you want to fully reset the database before insertion
+- `reset` -  whether you want to fully reset the database before insertion (Set to True if you want to reset the database, and False if not)
 - `batch_size` - how many rows of data will be uploaded at the same time. Bigger batches increase the running time, but require more memory.
 
 After the file successfully executes, MySQL database will be updated with `Tweets` and `Users` information (If `local` was set to `True`, then the database can be found under `data_processed\local_backup.db`).
