@@ -1,12 +1,11 @@
 # Evaluating Airline Performance using Twitter data
 
-One Paragraph of the project description
+This is the code base of Mirco-Soft DBL. This instruction was written by tired and exhausted people, who yet created a comprehensive analysis of Lufthansa Twitter team performance.
 
 ## Getting Started
 
 These instructions will give you a copy of the project up and running on
-your local machine for development and testing purposes. See deployment
-for notes on deploying the project on a live system.
+your local machine for development and testing purposes.
 
 ## Python version
 ### Windows
