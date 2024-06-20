@@ -102,8 +102,8 @@ Take into account that setting up an online external MySQL server will cost some
 Here are the instructions to set up the MySQL server that is hosted externally using {} {Kirill has to do it}
 
 If this website is deprecated or does not work, here are some resources on how to set up an external MySQL server online:
-https://aws.amazon.com/free/database/
-https://www.amazonaws.cn/en/getting-started/tutorials/create-mysql-db/
+- https://aws.amazon.com/free/database/
+- https://www.amazonaws.cn/en/getting-started/tutorials/create-mysql-db/
 
 To be able to create a remote MySQL database using the code, you must set the following environment variables:
 - `DBL_USER` - username
