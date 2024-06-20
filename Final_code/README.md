@@ -95,7 +95,15 @@ your local machine for development and testing purposes.
      pip install -r requirements.txt
      ```
 
-### Environment variables
+### MySQL server setup and Environment variables
+
+Take into account that setting up an online external MySQL server will cost some money. If you do not want to simultaneously work on the database with different instances or pay for the server, we recommend using a local database with Sqlite3 (see  '_2_Insert_Tweets_to_Database' below)
+
+Here are the instructions to set up the MySQL server that is hosted externally using {} {Kirill has to do it}
+
+If this website is deprecated or does not work, here are some resources on how to set up an external MySQL server online:
+https://aws.amazon.com/free/database/
+https://www.amazonaws.cn/en/getting-started/tutorials/create-mysql-db/
 
 To be able to create a remote MySQL database using the code, you must set the following environment variables:
 - `DBL_USER` - username
@@ -108,10 +116,7 @@ The code gets the variables using `check_env_vars()` function defined in `_0_Con
 If you are not planning to use MySQL and will be working with local SQLite3 database then you don't need to set the environment variables. 
 
 ## How to run 
-1. Clone the repository:
-```console
-git clone https://github.com/skyrimer/DBL-Micro-Soft.git
-```
+1. Unzip the DBL-Micro-Soft-1.zip and open the folder in your code editor or command prompt.
 
 2. Navigate to the project directory:
 ```console
@@ -150,7 +155,7 @@ The result will be one JSON file in this directory, under `data_processed/cleane
 
 Now that we have the tweets in form of JSON only with the fields that interest us, the next step is to insert them into an SQL database. We decided to use a MySQL database (and Sqlite3 as the backup database in case something happens to the server), it can be created by running the
 insert_to_db.py file (remember to set up environment variables as stated at the top of this document!!). Before executing the script, you must check 3 parameters:
-- `local` - whether the Sqlite or MySQL should be filled with data
+- `local` - whether the Sqlite or MySQL should be filled with data (set to True if you want to use the local version Sqlite3, and False if you want to use external server MYSQL)
 - `reset` -  whether you want to fully reset the database before insertion
 - `batch_size` - how many rows of data will be uploaded at the same time. Bigger batches increase the running time, but require more memory.
 
